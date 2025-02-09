@@ -1,61 +1,106 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:ct_festival/utils/logger.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+import 'package:ct_festival/features/auth_screens/model/user_model.dart' as auth;
 
 class AuthService {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final AppLogger _logger = AppLogger();
+  final FirebaseFirestore _firestore;
+  final firebase_auth.FirebaseAuth _auth;
 
-  // register with email and password
-  Future registerWithEmailAndPassword(String firstName, String lastName, String email, String password, String age, String gender) async {
+// AuthService class constructor
+  AuthService({
+    required FirebaseFirestore firestore,
+    required firebase_auth.FirebaseAuth auth,
+  })  : _firestore = firestore,
+        _auth = auth;
+
+  // Login user method
+  Future<(auth.User?, String)> loginUser({
+    required String email,
+    required String password,
+  }) async {
     try {
-      final UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+      final userCredential = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-      final User? user = userCredential.user;
 
-      // Store additional user information in Firestore
-      if (user != null) {
-        await _firestore.collection('users').doc(user.uid).set({
-          'firstName': firstName,
-          'lastName': lastName,
-          'email': email,
-          'age': age,
-          'gender': gender,
-        });
+      if (userCredential.user != null) {
+        final docSnapshot = await _firestore
+            .collection('users')
+            .doc(userCredential.user!.uid)
+            .get();
+
+        if (docSnapshot.exists) {
+          return (auth.User.fromMap(docSnapshot.data()!), 'Success');
+        }
       }
-
-      return user;
+      return (null, 'Login failed');
     } catch (e) {
-      _logger.logError(e.toString()); // Use logger to log error
-      return null;
+      return (null, e.toString());
     }
   }
 
-  // sign in with email and password
-  Future signInWithEmailAndPassword(String email, String password) async {
+  // Register user method
+  Future<(auth.User?, String)> registerUser({
+    required String firstName,
+    required String lastName,
+    required String email,
+    required String gender,
+    required String age,
+    required String password,
+  }) async {
     try {
-      final UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+      final userCredential = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      final User? user = userCredential.user;
-      return user;
+
+      if (userCredential.user != null) {
+        // Send email verification
+        await userCredential.user!.sendEmailVerification();
+
+        final user = auth.User(
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          gender: gender,
+          age: age,
+          createdAt: DateTime.now(),
+        );
+
+        await _firestore
+            .collection('users')
+            .doc(userCredential.user!.uid)
+            .set(user.toMap());
+
+        return (user, 'Registration successful. Please verify your email.');
+      }
+      return (null, 'Registration failed');
     } catch (e) {
-      _logger.logError(e.toString());
+      return (null, e.toString());
+    }
+  }
+
+  // getCurrentUser method
+  Future<auth.User?> getCurrentUser() async {
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        final doc = await _firestore.collection('users').doc(user.uid).get();
+        if (doc.exists) {
+          return auth.User.fromMap(doc.data()!);
+        }
+      }
+      return null;
+    } catch (e) {
       return null;
     }
   }
 
-  // sign out
-  Future signOut() async {
-    try {
-      return await _auth.signOut();
-    } catch (e) {
-      _logger.logError(e.toString());
-      return null;
-    }
+  // Check email verification status
+  Future<bool> isEmailVerified() async {
+    await _auth.currentUser?.reload();
+    return _auth.currentUser?.emailVerified ?? false;
   }
+
 }

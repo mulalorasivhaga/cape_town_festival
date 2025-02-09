@@ -3,6 +3,7 @@ import 'package:ct_festival/config/routes.dart';
 import 'package:ct_festival/shared/navigation/view/main_nav.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -11,7 +12,8 @@ void main() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
-    runApp(const CtApp());
+    runApp(ProviderScope
+      (child: const CtApp()));
   } catch (e) {
     runApp(const MaterialApp(home: Center(child: CircularProgressIndicator())));
   }

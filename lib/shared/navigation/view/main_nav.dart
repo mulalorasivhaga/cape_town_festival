@@ -1,8 +1,8 @@
-import 'package:ct_festival/features/login_screen/view/login_view.dart';
-import 'package:ct_festival/features/reg_screen/view/reg_view.dart';
+import 'package:ct_festival/features/auth_screens/view/login_view.dart';
+import 'package:ct_festival/features/auth_screens/view/reg_view.dart';
 import 'package:flutter/material.dart';
 import 'package:ct_festival/features/home_screen/view/home_view.dart';
-import 'package:ct_festival/config/logger.dart';
+import 'package:ct_festival/utils/logger.dart';
 
 class MainNav extends StatelessWidget {
   // Create an instance of the logger
@@ -32,7 +32,7 @@ class MainNav extends StatelessWidget {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              decoration: BoxDecoration(color: Colors.red),
+              decoration: BoxDecoration(color: Color(0xFFAD343E)),
               child: Image(
                 image: AssetImage('assets/logo/ct_logo.png'),
               ),
@@ -44,7 +44,7 @@ class MainNav extends StatelessWidget {
                 // Log navigation action
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const RegView()),
+                  MaterialPageRoute(builder: (context) => const RegScreen()),
                 );
               },
             ),
@@ -55,7 +55,7 @@ class MainNav extends StatelessWidget {
                 // Log navigation action
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const LoginView()),
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
                 );
               },
             ),

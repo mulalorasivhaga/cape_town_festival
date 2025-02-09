@@ -17,20 +17,21 @@ class BackToHomeNav extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Padding(
-                padding: const EdgeInsets.only(left: 0),
+                padding: const EdgeInsets.only(left: 10, top: 10, bottom: 5),
                 child: Tooltip(
                   message: 'Click to go back',
                   child: GestureDetector(
                     onTap: () => Navigator.pop(context), // Goes back to previous screen
-                    child: const MouseRegion(
+                    child: MouseRegion(
                       cursor: SystemMouseCursors.click,
                       child: Icon(
                         Icons.arrow_back_ios,
-                        color: Colors.red),
+                        color: Color(0xFFE2AF29) // Use theme icon color
                       ),
                     ),
                   ),
                 ),
+              ),
             ],
           );
         },
@@ -40,4 +41,3 @@ class BackToHomeNav extends StatelessWidget {
 
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
-
