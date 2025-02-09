@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:ct_festival/utils/logger.dart';
 import 'package:ct_festival/features/auth_screens/controller/auth_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../user_dashboard/view/dashboard_view.dart';
 
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -90,6 +91,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       if (mounted) {
         if (user != null) {
           logger.logInfo('Login successful for user: ${user.email}');
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => UserDashboard()),
+          );
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Login successful!'),
