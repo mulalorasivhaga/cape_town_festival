@@ -11,8 +11,12 @@ class LoginView extends StatelessWidget {
         preferredSize: const Size.fromHeight(50),
         child: BackToHomeNav(),
       ),
-      backgroundColor: Colors.white,
-      body: Center(child: Text('Login View', style: TextStyle(color: Colors.black),
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      // container to store form
+      //form stores full name, email, password, age, gender
+      body: Center(child:
+      Text('Login View',
+        style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
           ),
         ),
       );
