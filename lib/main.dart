@@ -1,7 +1,6 @@
 import 'package:ct_festival/features/user_dashboard/view/dashboard_view.dart';
 import 'package:flutter/material.dart';
 import 'package:ct_festival/config/routes.dart';
-import 'package:ct_festival/shared/navigation/view/main_nav.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

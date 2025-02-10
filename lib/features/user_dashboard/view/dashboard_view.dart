@@ -1,43 +1,26 @@
 import 'package:ct_festival/features/user_dashboard/view/profile_dialog.dart';
 import 'package:ct_festival/utils/logger.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
-import '../../../shared/navigation/view/back_button.dart';
 import '../../auth_screens/view/login_view.dart';
+import '../../user_dashboard/controller/user_profile_service.dart';
+import 'package:ct_festival/features/user_dashboard/view/user_nav.dart';
 
 class UserDashboard extends StatelessWidget {
   // Logger instance
   final AppLogger logger = AppLogger();
+  final UserProfileService _userProfileService = UserProfileService();
+
   UserDashboard({super.key});
-
-  /// Get the current user from Firestore
-  Future<firebase_auth.User?> _getCurrentUser() async {
-    try {
-      logger.logInfo('🔍 Fetching current user...');
-      final firebase_auth.User? firebaseUser = firebase_auth.FirebaseAuth.instance.currentUser;
-
-      if (firebaseUser == null) {
-        logger.logWarning('⚠️ No authenticated user found');
-        return null;
-      }
-
-      logger.logInfo('✅ User data retrieved successfully');
-      return firebaseUser;
-    } catch (e) {
-      logger.logError('❌ Error fetching user data: $e');
-      return null;
-    }
-  }
 
   /// function to show the profile dialog
   void _showProfileDialog(BuildContext context) async {
     try {
       logger.logInfo('🔄 Opening profile view dialog...');
-      final currentUser = await _getCurrentUser();
+      final userProfile = await _userProfileService.getUserProfile();
 
-      if (currentUser != null && context.mounted) {
-        logger.logInfo('👤 Showing profile for user: ${currentUser.email}');
-        _showDialog(context, ProfileDialog(currentUser: currentUser));
+      if (userProfile != null && context.mounted) {
+        logger.logInfo('👤 Showing profile for user: ${userProfile['email']}');
+        _showDialog(context, ProfileDialog(currentUser: userProfile));
       } else if (context.mounted) {
         logger.logWarning('⚠️ User not authenticated, redirecting to login');
         Navigator.pushReplacement(
@@ -80,10 +63,9 @@ class UserDashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //TODO: Resolve the issue with the PreferredSize widget, user must log out of dashboard
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(50),
-        child: BackToHomeNav(),
+        child: UserNavBar(),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 24.0),

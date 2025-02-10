@@ -1,8 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/material.dart';
 
 class ProfileDialog extends StatelessWidget {
-  final auth.User currentUser;
+  final Map<String, dynamic> currentUser;
 
   const ProfileDialog({super.key, required this.currentUser});
 
@@ -33,7 +32,7 @@ class ProfileDialog extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: const BoxDecoration(
         border: Border(
-          bottom: BorderSide(color: Color(0xFF000000), width: 1),
+          bottom: BorderSide(color: Color(0xFFF2AF29), width: 1),
         ),
       ),
       child: Row(
@@ -43,7 +42,7 @@ class ProfileDialog extends StatelessWidget {
             'Profile',
             style: TextStyle(
               color: Colors.white,
-              fontSize: 24,
+              fontSize: 36,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -57,23 +56,19 @@ class ProfileDialog extends StatelessWidget {
   }
 
   Widget _buildProfileInfo() {
-    final displayName = currentUser.displayName ?? '';
-    final nameParts = displayName.split(' ');
-
-    final firstName = nameParts.isNotEmpty ? nameParts[0] : '';
-    final lastName = nameParts.length > 1 ? nameParts[1] : '';
-
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildInfoSection(
             title: 'Personal Information',
             items: [
-              InfoItem(label: 'First Name', value: firstName),
-              InfoItem(label: 'Last Name', value: lastName),
-              InfoItem(label: 'Email', value: currentUser.email ?? ''),
+              InfoItem(label: 'First Name:', value: currentUser['firstName'] ?? ''),
+              InfoItem(label: 'Last Name:', value: currentUser['lastName'] ?? ''),
+              InfoItem(label: 'Email:', value: currentUser['email'] ?? ''),
+              InfoItem(label: 'Gender:', value: currentUser['gender'] ?? ''),
+              InfoItem(label: 'Age:', value: currentUser['age'] ?? '')
             ],
           ),
         ],
@@ -97,7 +92,7 @@ class ProfileDialog extends StatelessWidget {
         Container(
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(5),
             border: Border.all(color: Colors.black, width: 1),
           ),
           child: Column(
@@ -110,7 +105,7 @@ class ProfileDialog extends StatelessWidget {
 
   Widget _buildInfoRow(InfoItem item) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 11),
       decoration: const BoxDecoration(
         border: Border(
           bottom: BorderSide(color: Colors.black, width: 1),

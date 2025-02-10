@@ -1,3 +1,4 @@
+import 'package:ct_festival/shared/navigation/view/main_nav.dart';
 import 'package:flutter/material.dart';
 
 class BackToHomeNav extends StatelessWidget {
@@ -21,12 +22,16 @@ class BackToHomeNav extends StatelessWidget {
                 child: Tooltip(
                   message: 'Click to go back',
                   child: GestureDetector(
-                    onTap: () => Navigator.pop(context), // Goes back to previous screen
+                    onTap: () => Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => MainNav()), // Replace HomeScreen with your home screen widget
+                          (Route<dynamic> route) => false,
+                    ),
                     child: MouseRegion(
                       cursor: SystemMouseCursors.click,
                       child: Icon(
-                        Icons.arrow_back_ios,
-                        color: Color(0xFFE2AF29) // Use theme icon color
+                          Icons.arrow_back_ios,
+                          color: Color(0xFFE2AF29) // Use theme icon color
                       ),
                     ),
                   ),
