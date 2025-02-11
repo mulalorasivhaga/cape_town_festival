@@ -89,14 +89,16 @@ class _RegScreenState extends ConsumerState<RegScreen> {
   }
 
   /// Verify email address
+  String role = 'User';
+
   Future<void> _verifyEmail() async {
     if (email.isEmpty) return;
 
     setState(() => _isVerifyingEmail = true);
-    logger.logInfo('Starting email verification for: $email');
+    logger.logInfo('Starting email verification for: $email, $role');
 
     try {
-      final (isValid, message) = await _emailVerificationService.verifyEmail(email);
+      final (isValid, message, assignedRole) = await _emailVerificationService.verifyEmail(email);
       logger.logInfo('Email verification response: Valid: $isValid, Message: $message');
 
       setState(() {
@@ -155,6 +157,7 @@ class _RegScreenState extends ConsumerState<RegScreen> {
         lastName: lastName,
         age: age,
         gender: gender,
+        role: role,
       );
 
       logger.logInfo('Registration response: User: ${user?.email}, Message: $message');

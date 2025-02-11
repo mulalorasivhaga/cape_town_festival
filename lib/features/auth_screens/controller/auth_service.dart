@@ -1,12 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:ct_festival/features/auth_screens/model/user_model.dart' as auth;
+import 'package:ct_festival/features/auth_screens/controller/email_verification.dart';
 
 class AuthService {
   final FirebaseFirestore _firestore;
   final firebase_auth.FirebaseAuth _auth;
 
-// AuthService class constructor
+  // AuthService class constructor
   AuthService({
     required FirebaseFirestore firestore,
     required firebase_auth.FirebaseAuth auth,
@@ -47,6 +48,7 @@ class AuthService {
     required String email,
     required String gender,
     required String age,
+    required String role,
     required String password,
   }) async {
     try {
@@ -59,12 +61,16 @@ class AuthService {
         // Send email verification
         await userCredential.user!.sendEmailVerification();
 
+        // Assign the correct role dynamically based on email
+        String role = EmailVerificationService.assignRole(email);
+
         final user = auth.User(
           firstName: firstName,
           lastName: lastName,
           email: email,
           gender: gender,
           age: age,
+          role: role,
           createdAt: DateTime.now(),
         );
 
@@ -102,5 +108,4 @@ class AuthService {
     await _auth.currentUser?.reload();
     return _auth.currentUser?.emailVerified ?? false;
   }
-
 }
