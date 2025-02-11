@@ -1,4 +1,4 @@
-import 'package:ct_festival/features/user_dashboard/view/dashboard_view.dart';
+import 'package:ct_festival/shared/navigation/view/main_nav.dart';
 import 'package:flutter/material.dart';
 import 'package:ct_festival/config/routes.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -28,7 +28,7 @@ class CtApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Cape Town Festival',
       theme: ThemeData.light(),
-      home: UserDashboard(),
+      home: MainNav(),
       routes: Routes.getRoutes(),  // Use getRoutes() here
     );
   }

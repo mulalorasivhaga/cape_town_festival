@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:ct_festival/utils/logger.dart';
 import 'package:ct_festival/features/auth_screens/controller/auth_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../user_dashboard/view/dashboard_view.dart';
+import '../../dashboard_screen/view/user_dashboard_view.dart';
 
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -78,7 +78,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
 
     setState(() => _isLoading = true);
-    logger.logInfo('Starting login process for user: $userEmail');
+    //logger.logInfo('Starting login process for user: $userEmail');
 
     try {
       final (user, message) = await _authService.loginUser(
@@ -86,7 +86,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         password: userPassword,
       );
 
-      logger.logInfo('Login response: User: ${user?.email}, Message: $message');
+      //logger.logInfo('Login response: User: ${user?.email}, Message: $message');
 
       if (mounted) {
         if (user != null) {
@@ -101,7 +101,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               backgroundColor: Colors.green,
             ),
           );
-          // Go to user dashboard
+          // Go to user dashboard_screen
           //Navigator.pushReplacementNamed(context, '/users');
         } else {
           logger.logWarning('Login failed: $message');

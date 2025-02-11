@@ -1,5 +1,7 @@
+import 'package:ct_festival/features/dashboard_screen/view/admin_dashboard_view.dart';
 import 'package:ct_festival/features/auth_screens/view/login_view.dart';
 import 'package:ct_festival/features/auth_screens/view/reg_view.dart';
+import 'package:ct_festival/features/event_screens/view/event_view.dart';
 import 'package:flutter/material.dart';
 import 'package:ct_festival/features/home_screen/view/home_view.dart';
 import 'package:ct_festival/utils/logger.dart';
@@ -38,27 +40,42 @@ class MainNav extends StatelessWidget {
               ),
             ),
             ListTile(
+              title: const Text('Events', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFFAD343E)),),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const EventView()),
+                );
+              },
+            ), //events
+            ListTile(
               title: const Text('Register'),
               onTap: () {
-                //logger.logInfo("Register menu item clicked");
-                // Log navigation action
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const RegScreen()),
                 );
               },
-            ),
+            ), //register
             ListTile(
               title: const Text('Login'),
               onTap: () {
-                //logger.logInfo("Login menu item clicked");
-                // Log navigation action
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const LoginScreen()),
                 );
               },
-            ),
+            ), //login
+            ListTile(
+              title: const Text('Admin'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) =>  AdminDashboardView()),
+                );
+              },
+            ), //admin
+
           ],
         ),
       ),

@@ -51,7 +51,6 @@ class _RegScreenState extends ConsumerState<RegScreen> {
     'Male',
   ];
 
-
   @override
   void dispose() {
     logger.logDebug('Disposing RegScreen');
@@ -69,7 +68,6 @@ class _RegScreenState extends ConsumerState<RegScreen> {
     }
     return null;
   }
-
 
 /// Password validation
   String? _validatePassword(String? value) {
@@ -90,7 +88,6 @@ class _RegScreenState extends ConsumerState<RegScreen> {
 
   /// Verify email address
   String role = 'User';
-
   Future<void> _verifyEmail() async {
     if (email.isEmpty) return;
 
@@ -127,8 +124,7 @@ class _RegScreenState extends ConsumerState<RegScreen> {
     }
   }
 
-
-  // Registration handler
+  /// Registration handler
   Future<void> _handleRegistration() async {
     if (!_formKey.currentState!.validate()) {
       logger.logWarning('Form validation failed');
