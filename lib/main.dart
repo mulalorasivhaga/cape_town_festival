@@ -29,7 +29,7 @@ class CtApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Cape Town Festival',
       theme: ThemeData.light(),
-      home: AdminDashboardView(),
+      home: MainNav(),
       routes: Routes.getRoutes(),  // Use getRoutes() here
     );
   }

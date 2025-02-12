@@ -1,4 +1,3 @@
-import 'package:ct_festival/features/dashboard_screen/view/mixin/dashboard_mixin.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ct_festival/utils/logger.dart';
@@ -187,6 +186,19 @@ class CreateEventDialogState extends State<CreateEventDialog> {
             initialDate: DateTime.now(),
             firstDate: DateTime(2000),
             lastDate: DateTime(2101),
+            builder: (BuildContext context, Widget? child) {
+              return Theme(
+                data: ThemeData.light().copyWith(
+                  colorScheme: ColorScheme.light(
+                    primary: Color(0xFFAD343E), // header background color
+                    onPrimary: Colors.white, // header text color
+                    onSurface: Colors.black, // body text color
+                  ),
+                  dialogBackgroundColor: Colors.white, // background color
+                ),
+                child: child!,
+              );
+            },
           );
 
           if (pickedDate != null) {
@@ -194,6 +206,19 @@ class CreateEventDialogState extends State<CreateEventDialog> {
             final TimeOfDay? pickedTime = await showTimePicker(
               context: context,
               initialTime: TimeOfDay.now(),
+              builder: (BuildContext context, Widget? child) {
+                return Theme(
+                  data: ThemeData.light().copyWith(
+                    colorScheme: ColorScheme.light(
+                      primary: Color(0xFFAD343E), // header background color
+                      onPrimary: Colors.white, // header text color
+                      onSurface: Colors.black, // body text color
+                    ),
+                    dialogBackgroundColor: Colors.white, // background color
+                  ),
+                  child: child!,
+                );
+              },
             );
 
             if (pickedTime != null) {

@@ -20,6 +20,7 @@ class Event {
     DateTime? createdAt,
   }) : createdAt = createdAt ?? DateTime.now();
 
+  /// method to convert event details to a map
   Map<String, dynamic> toMap() {
     return {
       'title': title,
@@ -33,6 +34,7 @@ class Event {
     };
   }
 
+  /// factory method to create an event from a map
   factory Event.fromMap(Map<String, dynamic> map) {
     return Event(
       title: map['title'] ?? '',
@@ -46,6 +48,7 @@ class Event {
     );
   }
 
+  /// method to copy an event with new details
   Event copyWith({
     String? title,
     String? description,

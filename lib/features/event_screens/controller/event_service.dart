@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ct_festival/features/auth_screens/model/admin_model.dart' as admin_auth;
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../../utils/logger.dart';
 import '../../auth_screens/controller/auth_service.dart';
 import '../model/event_model.dart';
 
@@ -11,18 +12,16 @@ class EventService {
       firestore: FirebaseFirestore.instance,
       auth: FirebaseAuth.instance
   );
+  final AppLogger _appLogger = AppLogger();
 
   /// get all events
   Future<List<Event>> getAllEvents() async {
     try {
-      final admin = _auth.currentUser;
-      if (admin == null) {
-        return [];
-      }
-
-      final events = await _firestore.collection('events').get();
-      return events.docs.map((e) => Event.fromMap(e.data())).toList();
-    } catch (e) {
+      final querySnapshot = await _firestore.collection('events').get();
+      final events = querySnapshot.docs.map((doc) => Event.fromMap(doc.data())).toList();
+      return events;
+    } catch (e, stackTrace) {
+      _appLogger.logError('Failed to fetch events: ${e.toString()}', stackTrace);
       return [];
     }
   }
@@ -66,4 +65,5 @@ class EventService {
       return 'Failed to update event: ${e.toString()}';
     }
   }
+
 }

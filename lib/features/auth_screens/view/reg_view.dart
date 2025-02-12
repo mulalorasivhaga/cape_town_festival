@@ -215,7 +215,7 @@ class _RegScreenState extends ConsumerState<RegScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(25),
+        preferredSize: const Size.fromHeight(75),
         child: BackToHomeNav(),
       ),
       backgroundColor:Color(0xFFAD343E),
@@ -256,7 +256,7 @@ class _RegScreenState extends ConsumerState<RegScreen> {
         Text(
           'Register',
           style: TextStyle(
-            color: Colors.white,
+            color: Color(0xFFF2AF29),
             fontSize: isMobile ? 36 : 72,
             fontWeight: FontWeight.bold,
           ),
@@ -268,9 +268,9 @@ class _RegScreenState extends ConsumerState<RegScreen> {
           ),
           child: Text(
             "Welcome to Cape Town Festival."
-                "To get the most out of your experience, please register below.",
+                " To get the most out of your experience, please register below.",
             style: TextStyle(
-              color: Colors.white,
+              color: Color(0xFFE0E0CE),
               fontSize: isMobile ? 16 : 18,
             ),
             textAlign: TextAlign.center,

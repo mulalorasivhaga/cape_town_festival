@@ -16,10 +16,10 @@ class AdminDashboardView extends StatelessWidget with DashboardMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(25),
+        preferredSize: const Size.fromHeight(50),
         child: LogoutNavBar(),
       ),
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xFFE0E0CE),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 24.0),
         child: Center(

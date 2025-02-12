@@ -10,7 +10,7 @@ class BackToHomeNav extends StatelessWidget {
 
     return AppBar(
       automaticallyImplyLeading: false,
-      toolbarHeight: screenHeight * 0.08,
+      toolbarHeight: screenHeight * 0.5, // Increased toolbar height
       backgroundColor: Colors.transparent,
       title: LayoutBuilder(
         builder: (context, constraints) {
@@ -18,7 +18,7 @@ class BackToHomeNav extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Padding(
-                padding: const EdgeInsets.only(left: 10, top: 10, bottom: 5),
+                padding: const EdgeInsets.only(left: 20, top: 30, bottom: 10), // Adjusted padding
                 child: Tooltip(
                   message: 'Click to go back',
                   child: GestureDetector(
@@ -31,7 +31,7 @@ class BackToHomeNav extends StatelessWidget {
                       cursor: SystemMouseCursors.click,
                       child: Icon(
                           Icons.arrow_back_ios,
-                          color: Color(0xFFE2AF29) // Use theme icon color
+                          color: Color(0xFFE0E0CE) // Use theme icon color
                       ),
                     ),
                   ),

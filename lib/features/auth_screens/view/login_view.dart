@@ -141,7 +141,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(25),
+        preferredSize: const Size.fromHeight(50),
         child: BackToHomeNav(),
       ),
       backgroundColor:Color(0xFFAD343E),
@@ -383,15 +383,3 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 }
-
-/// This method builds the logo section of the LoginScreen widget
-// Widget _buildLogo(BoxConstraints constraints) {
-//   final bool isMobile = constraints.maxWidth <= 600;
-//   final double size = isMobile ? 150 : 200;
-
-  /// Return the logo section
-  // return Image.asset(
-  //   'assets/logo/ct_logo.png',
-  //   width: size,
-  //   height: size,
-  // );

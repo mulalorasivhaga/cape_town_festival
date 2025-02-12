@@ -60,7 +60,7 @@ class LogoutNavBar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Padding(
-                padding: const EdgeInsets.only(right: 0, top: 10, bottom: 5),
+                padding: const EdgeInsets.only(right: 0, top: 30, bottom: 5),
                 child: Tooltip(
                   message: 'Click to log out',
                   child: GestureDetector(

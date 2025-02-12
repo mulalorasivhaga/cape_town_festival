@@ -45,6 +45,7 @@ class MainNav extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color(0xFFE0E0CE),
         title: const Text(''),
         leading: Builder(
           builder: (context) {
