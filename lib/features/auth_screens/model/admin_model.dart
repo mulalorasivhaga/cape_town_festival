@@ -1,17 +1,13 @@
-class User {
+class Admin {
   final String firstName;
   final String lastName;
   final String email;
-  final String age;
-  final String gender;
   final DateTime createdAt;
 
-  User({
+  Admin({
     required this.firstName,
     required this.lastName,
-    required this.age,
     required this.email,
-    required this.gender,
     DateTime? createdAt,
   }) : createdAt = createdAt ?? DateTime.now();
 
@@ -19,49 +15,38 @@ class User {
     return {
       'firstName': firstName,
       'lastName': lastName,
-      'age': age,
       'email': email,
-      'gender': gender,
       'createdAt': createdAt.toIso8601String(),
     };
   }
 
-  factory User.fromMap(Map<String, dynamic> map) {
-    return User(
+  factory Admin.fromMap(Map<String, dynamic> map) {
+    return Admin(
       firstName: map['firstName'] ?? '',
       lastName: map['lastName'] ?? '',
-      age: map['age'] ?? '',
       email: map['email'] ?? '',
-      gender: map['gender'] ?? '',
       createdAt: map['createdAt'] != null ? DateTime.parse(map['createdAt']) : null,
     );
   }
 
-  User copyWith({
+  Admin copyWith({
     String? firstName,
     String? lastName,
-    String? age,
     String? email,
-    String? gender,
-    String? role,
     DateTime? createdAt,
   }) {
-    return User(
+    return Admin(
       firstName: firstName ?? this.firstName,
       lastName: lastName ?? this.lastName,
-      age: age ?? this.age,
       email: email ?? this.email,
-      gender: gender ?? this.gender,
       createdAt: createdAt ?? this.createdAt,
     );
   }
 
   @override
   String toString() {
-    return 'User(firstName: $firstName,'
+    return 'Admin(firstName: $firstName,'
         'lastName: $lastName,'
-        'age: $age,'
-        'email: $email,'
-        'gender: $gender';
+        'email: $email';
   }
 }

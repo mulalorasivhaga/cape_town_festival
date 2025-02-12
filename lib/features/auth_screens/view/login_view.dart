@@ -1,9 +1,12 @@
 import 'package:ct_festival/features/auth_screens/controller/auth_provider.dart';
+import 'package:ct_festival/features/auth_screens/model/admin_model.dart' as admin_auth;
+import 'package:ct_festival/features/auth_screens/model/user_model.dart' as user_auth;
 import 'package:ct_festival/shared/navigation/view/back_button.dart';
 import 'package:flutter/material.dart';
 import 'package:ct_festival/utils/logger.dart';
 import 'package:ct_festival/features/auth_screens/controller/auth_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../dashboard_screen/view/admin_dashboard_view.dart';
 import '../../dashboard_screen/view/user_dashboard_view.dart';
 
 
@@ -37,8 +40,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 // variables
   bool _passwordVisible = false;
   bool _isLoading = false;
-  String userEmail = '';
-  String userPassword = '';
+  String appUserEmail = '';
+  String appUserPassword = '';
 
   /// This method validates the email address
   String? _validateEmail(String? value) {
@@ -78,31 +81,34 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
 
     setState(() => _isLoading = true);
-    //logger.logInfo('Starting login process for user: $userEmail');
 
     try {
-      final (user, message) = await _authService.loginUser(
-        email: userEmail,
-        password: userPassword,
+      final (appUser, message) = await _authService.loginUser(
+        email: appUserEmail,
+        password: appUserPassword,
       );
 
-      //logger.logInfo('Login response: User: ${user?.email}, Message: $message');
-
       if (mounted) {
-        if (user != null) {
-          logger.logInfo('Login successful for user: ${user.email}');
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => UserDashboard()),
-          );
+        if (appUser != null) {
+          if (appUser is admin_auth.Admin) {
+            logger.logInfo('Login successful for admin: ${appUser.email}');
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => AdminDashboardView()),
+            );
+          } else if (appUser is user_auth.User) {
+            logger.logInfo('Login successful for user: ${appUser.email}');
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => UserDashboard()),
+            );
+          }
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Login successful!'),
               backgroundColor: Colors.green,
             ),
           );
-          // Go to user dashboard_screen
-          //Navigator.pushReplacementNamed(context, '/users');
         } else {
           logger.logWarning('Login failed: $message');
           ScaffoldMessenger.of(context).showSnackBar(
@@ -220,7 +226,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             title: 'Email address:',
             hintText: 'Please enter your Email Address',
             icon: Icons.email,
-            onChanged: (value) => setState(() => userEmail = value),
+            onChanged: (value) => setState(() => appUserEmail = value),
             validator: _validateEmail,  // Add the validator here
             constraints: constraints,
           ),
@@ -309,7 +315,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             maxWidth: isMobile ? constraints.maxWidth * 0.85 : 600,
           ),
           child: TextFormField(
-            onChanged: (value) => setState(() => userPassword = value),
+            onChanged: (value) => setState(() => appUserPassword = value),
             validator: _validatePassword,
             obscureText: !_passwordVisible,
             style: const TextStyle(color: Color(0xFF363636)),

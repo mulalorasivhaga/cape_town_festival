@@ -31,4 +31,27 @@ class UserProfileService {
     }
   }
 
+  /// function to get the admin profile
+  Future<Map<String, dynamic>?> getAdminProfile() async {
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        final userDoc = await _firestore.collection('admins').doc(user.uid).get();
+        if (userDoc.exists) {
+          logger.logInfo('✅ User data retrieved successfully: ${user.uid}');
+          return userDoc.data();
+        } else {
+          logger.logWarning('⚠️ User profile not found in Firestore.');
+          return null;
+        }
+      } else {
+        logger.logWarning('⚠️ No user is currently signed in.');
+        return null;
+      }
+    } catch (e) {
+      logger.logError('❌ Error fetching user data: $e');
+      return null;
+    }
+  }
+
 }

@@ -4,7 +4,7 @@
 // users can change their RSVP until event datetime
 
 import 'package:flutter/material.dart';
-import 'package:ct_festival/features/dashboard_screen/view/widget/user_nav.dart';
+import 'package:ct_festival/features/dashboard_screen/view/widget/logout_nav.dart';
 import 'package:ct_festival/features/dashboard_screen/view/mixin/dashboard_mixin.dart';
 
 
@@ -16,7 +16,7 @@ class UserDashboard extends StatelessWidget with DashboardMixin {
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(50),
-        child: UserNavBar(),
+        child: LogoutNavBar(),
       ),
       backgroundColor: const Color(0xFF474747),
       body: Padding(

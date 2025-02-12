@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../../auth_screens/view/login_view.dart';
 
-class UserNavBar extends StatelessWidget {
-  const UserNavBar({super.key});
+class LogoutNavBar extends StatelessWidget {
+  const LogoutNavBar({super.key});
 
   void _showLogoutConfirmation(BuildContext context) {
     showDialog(

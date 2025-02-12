@@ -1,4 +1,6 @@
 import 'package:ct_festival/features/auth_screens/controller/auth_provider.dart';
+import 'package:ct_festival/features/auth_screens/model/admin_model.dart' as admin_auth;
+import 'package:ct_festival/features/auth_screens/model/user_model.dart' as user_auth;
 import 'package:ct_festival/features/auth_screens/view/login_view.dart';
 import 'package:ct_festival/shared/navigation/view/back_button.dart';
 import 'package:flutter/material.dart';
@@ -87,15 +89,14 @@ class _RegScreenState extends ConsumerState<RegScreen> {
   }
 
   /// Verify email address
-  String role = 'User';
   Future<void> _verifyEmail() async {
     if (email.isEmpty) return;
 
     setState(() => _isVerifyingEmail = true);
-    logger.logInfo('Starting email verification for: $email, $role');
+    logger.logInfo('Starting email verification for: $email');
 
     try {
-      final (isValid, message, assignedRole) = await _emailVerificationService.verifyEmail(email);
+      final (isValid, message) = await _emailVerificationService.verifyEmail(email);
       logger.logInfo('Email verification response: Valid: $isValid, Message: $message');
 
       setState(() {
@@ -146,31 +147,42 @@ class _RegScreenState extends ConsumerState<RegScreen> {
     logger.logInfo('Starting registration process for user: $email');
 
     try {
-      final (user, message) = await _authService.registerUser(
+      final (appUser, message) = await _authService.registerUser(
         email: email,
         password: password,
         firstName: firstName,
         lastName: lastName,
         age: age,
         gender: gender,
-        role: role,
       );
 
-      logger.logInfo('Registration response: User: ${user?.email}, Message: $message');
-
       if (mounted) {
-        if (user != null) {
-          logger.logInfo('Registration successful for user: ${user.email}');
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Registration successful!'),
-              backgroundColor: Colors.green,
-            ),
-          );
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const LoginScreen()),
-          );
+        if (appUser != null) {
+          if (appUser is admin_auth.Admin) {
+            logger.logInfo('Registration successful for admin: ${appUser.email}');
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Registration successful for admin!'),
+                backgroundColor: Colors.green,
+              ),
+            );
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const LoginScreen()),
+            );
+          } else if (appUser is user_auth.User) {
+            logger.logInfo('Registration successful for user: ${appUser.email}');
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Registration successful!'),
+                backgroundColor: Colors.green,
+              ),
+            );
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const LoginScreen()),
+            );
+          }
         } else {
           logger.logWarning('Registration failed: $message');
           ScaffoldMessenger.of(context).showSnackBar(
@@ -291,19 +303,6 @@ class _RegScreenState extends ConsumerState<RegScreen> {
       ),
     );
   }
-
-  /// Build logo
-  /// option if dev wants to add a logo to the registration form
-  // Widget _buildLogo(BoxConstraints constraints) {
-  //   final bool isMobile = constraints.maxWidth <= 600;
-  //   final double size = isMobile ? 150 : 200;
-  //
-  //   return Image.asset(
-  //     'assets/logo/ct_logo.png',
-  //     width: size,
-  //     height: size,
-  //   );
-  // }
 
   /// Build form fields
   Widget _buildFormFields(BoxConstraints constraints) {

@@ -13,6 +13,7 @@ mixin DashboardMixin {
   void showProfileDialog(BuildContext context) async {
     try {
       final userProfile = await _userProfileService.getUserProfile();
+      final adminProfile = await _userProfileService.getAdminProfile();
 
       if (userProfile != null && context.mounted) {
         logger.logInfo('👤 Showing profile for user: ${userProfile['email']}');
@@ -33,6 +34,25 @@ mixin DashboardMixin {
             ),
           ),
         );
+      } else if (adminProfile != null && context.mounted) {
+        logger.logInfo('👤 Showing profile for admin: ${adminProfile['email']}');
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (BuildContext context) => Dialog(
+            backgroundColor: Colors.transparent,
+            insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Container(
+              width: MediaQuery.of(context).size.width * 0.8,
+              height: MediaQuery.of(context).size.height * 0.8,
+              decoration: BoxDecoration(
+                color: const Color(0xFFAD343E),
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: ProfileDialog(currentUser: adminProfile),
+            ),
+          ),
+        );
       } else if (context.mounted) {
         logger.logWarning('⚠️ User not authenticated, redirecting to login');
         Navigator.pushReplacement(
@@ -49,6 +69,7 @@ mixin DashboardMixin {
       }
     }
   }
+}
 
   /// Function to show the create event dialog
   void showCreateEventDialog(BuildContext context) {
@@ -58,7 +79,7 @@ mixin DashboardMixin {
       builder: (BuildContext context) => CreateEventDialog(),
     );
   }
-}
+
 
   /// Build the card widget
   Widget buildCard({
@@ -66,7 +87,7 @@ mixin DashboardMixin {
     required VoidCallback onTap,
     required Color color,
     bool isDisabled = false,
-  }) {
+  })   {
     return Card(
       elevation: 4.0,
       shape: RoundedRectangleBorder(

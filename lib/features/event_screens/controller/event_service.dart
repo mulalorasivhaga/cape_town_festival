@@ -1,7 +1,5 @@
-// create event
-// edit event (change event details)
-
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ct_festival/features/auth_screens/model/admin_model.dart' as admin_auth;
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../auth_screens/controller/auth_service.dart';
 import '../model/event_model.dart';
@@ -13,11 +11,12 @@ class EventService {
       firestore: FirebaseFirestore.instance,
       auth: FirebaseAuth.instance
   );
+
   /// get all events
   Future<List<Event>> getAllEvents() async {
     try {
-      final user = _auth.currentUser;
-      if (user == null) {
+      final admin = _auth.currentUser;
+      if (admin == null) {
         return [];
       }
 
@@ -31,14 +30,14 @@ class EventService {
   /// create event
   Future<String> createEvent(Event event) async {
     try {
-      final user = _auth.currentUser;
-      if (user == null) {
-        return 'User not authenticated';
+      final admin = _auth.currentUser;
+      if (admin == null) {
+        return 'Admin not authenticated';
       }
 
-      final authUser = await _authService.getCurrentUser();
-      if (authUser == null || authUser.role != 'Admin') {
-        return 'User not authorized to create events';
+      final authAdmin = await _authService.getCurrentUser();
+      if (authAdmin is! admin_auth.Admin) {
+        return 'Only admins can create events';
       }
 
       await _firestore.collection('events').add(event.toMap());
@@ -51,14 +50,14 @@ class EventService {
   /// edit event (change event details)
   Future<String> editEvent(String eventId, Event updatedEvent) async {
     try {
-      final user = _auth.currentUser;
-      if (user == null) {
-        return 'User not authenticated';
+      final admin = _auth.currentUser;
+      if (admin == null) {
+        return 'Admin not authenticated';
       }
 
-      final authUser = await _authService.getCurrentUser();
-      if (authUser == null || authUser.role != 'Admin') {
-        return 'User not authorized to edit events';
+      final authAdmin = await _authService.getCurrentUser();
+      if (authAdmin is! admin_auth.Admin) {
+        return 'Only admins can edit events';
       }
 
       await _firestore.collection('events').doc(eventId).update(updatedEvent.toMap());

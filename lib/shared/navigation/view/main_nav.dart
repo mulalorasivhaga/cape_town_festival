@@ -5,13 +5,42 @@ import 'package:ct_festival/features/event_screens/view/event_view.dart';
 import 'package:flutter/material.dart';
 import 'package:ct_festival/features/home_screen/view/home_view.dart';
 import 'package:ct_festival/utils/logger.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class MainNav extends StatelessWidget {
-  // Create an instance of the logger
   final AppLogger logger = AppLogger();
 
   MainNav({super.key});
 
+  //function to check if the user is an admin
+  Future<void> _checkAdmin(BuildContext context) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      if (!context.mounted) return; // Ensure context is still valid
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+      );
+      return;
+    }
+
+    final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+    // Check if user is admin
+    if (!userDoc.exists || userDoc.data()?['role'] != 'admin') {
+      if (!context.mounted) return; // Check if context is still valid
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('This link is only for admin, not permitted for users')),
+      );
+      return;
+    }
+
+    if (!context.mounted) return; // Check before navigation
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => AdminDashboardView()),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,7 +52,6 @@ class MainNav extends StatelessWidget {
               icon: const Icon(Icons.menu),
               onPressed: () {
                 Scaffold.of(context).openDrawer();
-                //logger.logInfo("Drawer opened");
               },
             );
           },
@@ -47,7 +75,7 @@ class MainNav extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => const EventView()),
                 );
               },
-            ), //events
+            ),
             ListTile(
               title: const Text('Register'),
               onTap: () {
@@ -56,7 +84,7 @@ class MainNav extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => const RegScreen()),
                 );
               },
-            ), //register
+            ),
             ListTile(
               title: const Text('Login'),
               onTap: () {
@@ -65,17 +93,11 @@ class MainNav extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => const LoginScreen()),
                 );
               },
-            ), //login
+            ),
             ListTile(
               title: const Text('Admin'),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) =>  AdminDashboardView()),
-                );
-              },
-            ), //admin
-
+              onTap: () => _checkAdmin(context),
+            ),
           ],
         ),
       ),
