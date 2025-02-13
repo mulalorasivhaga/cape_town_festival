@@ -270,7 +270,7 @@ class _RegScreenState extends ConsumerState<RegScreen> {
             "Welcome to Cape Town Festival."
                 " To get the most out of your experience, please register below.",
             style: TextStyle(
-              color: Color(0xFFE0E0CE),
+              color: Color(0xFFE0E0CE) ,
               fontSize: isMobile ? 16 : 18,
             ),
             textAlign: TextAlign.center,

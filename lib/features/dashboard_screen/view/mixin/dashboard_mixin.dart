@@ -1,5 +1,6 @@
 import 'package:ct_festival/features/dashboard_screen/controller/user_profile_service.dart';
 import 'package:ct_festival/features/dashboard_screen/view/widget/create_event_dialog.dart';
+import 'package:ct_festival/features/dashboard_screen/view/widget/edit_event_dialog.dart';
 import 'package:flutter/material.dart';
 import '../../../auth_screens/view/login_view.dart';
 import '../widget/profile_dialog.dart';
@@ -80,6 +81,14 @@ mixin DashboardMixin {
     );
   }
 
+  /// Function to show the edit event dialog
+  void showEditEventDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) => EditEventDialog(),
+    );
+  }
 
   /// Build the card widget
   Widget buildCard({

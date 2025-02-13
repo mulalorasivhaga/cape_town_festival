@@ -1,5 +1,5 @@
-// collection of event details
 class Event {
+  final String id;
   final String title;
   final String description;
   final String maxParticipants;
@@ -10,6 +10,7 @@ class Event {
   final DateTime createdAt;
 
   Event({
+    required this.id,
     required this.title,
     required this.description,
     required this.maxParticipants,
@@ -17,12 +18,28 @@ class Event {
     required this.location,
     required this.startDate,
     required this.endDate,
-    DateTime? createdAt,
-  }) : createdAt = createdAt ?? DateTime.now();
+    required this.createdAt,
+  });
 
-  /// method to convert event details to a map
+  // Convert from Map to Event object
+  factory Event.fromMap(Map<String, dynamic> map) {
+    return Event(
+      id: map['id'] ?? '',
+      title: map['title'] ?? '',
+      description: map['description'] ?? '',
+      maxParticipants: map['maxParticipants'] ?? '',
+      category: map['category'] ?? '',
+      location: map['location'] ?? '',
+      startDate: DateTime.parse(map['startDate'] ?? DateTime.now().toString()),
+      endDate: DateTime.parse(map['endDate'] ?? DateTime.now().toString()),
+      createdAt: DateTime.parse(map['createdAt'] ?? DateTime.now().toString()),
+    );
+  }
+
+  // Convert Event object to Map
   Map<String, dynamic> toMap() {
     return {
+      'id': id,
       'title': title,
       'description': description,
       'maxParticipants': maxParticipants,
@@ -34,52 +51,18 @@ class Event {
     };
   }
 
-  /// factory method to create an event from a map
-  factory Event.fromMap(Map<String, dynamic> map) {
+  /// Factory method to create an Event from Firestore
+  factory Event.fromFirestore(Map<String, dynamic> data, String documentId) {
     return Event(
-      title: map['title'] ?? '',
-      description: map['description'] ?? '',
-      maxParticipants: map['maxParticipants'] ?? '',
-      category: map['category'] ?? '',
-      location: map['location'] ?? '',
-      startDate: map['startDate'] != null ? DateTime.parse(map['startDate']) : DateTime.now(),
-      endDate: map['endDate'] != null ? DateTime.parse(map['endDate']) : DateTime.now(),
-      createdAt: map['createdAt'] != null ? DateTime.parse(map['createdAt']) : DateTime.now(),
+      id: documentId,
+      title: data['title'] ?? '',
+      description: data['description'] ?? '',
+      maxParticipants: data['maxParticipants'] ?? '',
+      category: data['category'] ?? '',
+      location: data['location'] ?? '',
+      startDate: DateTime.parse(data['startDate'] ?? DateTime.now().toString()),
+      endDate: DateTime.parse(data['endDate'] ?? DateTime.now().toString()),
+      createdAt: DateTime.parse(data['createdAt'] ?? DateTime.now().toString()),
     );
-  }
-
-  /// method to copy an event with new details
-  Event copyWith({
-    String? title,
-    String? description,
-    String? maxParticipants,
-    String? category,
-    String? location,
-    DateTime? startDate,
-    DateTime? endDate,
-    DateTime? createdAt,
-  }) {
-    return Event(
-      title: title ?? this.title,
-      description: description ?? this.description,
-      maxParticipants: maxParticipants ?? this.maxParticipants,
-      category: category ?? this.category,
-      location: location ?? this.location,
-      startDate: startDate ?? this.startDate,
-      endDate: endDate ?? this.endDate,
-      createdAt: createdAt ?? this.createdAt,
-    );
-  }
-
-  @override
-  String toString() {
-    return 'Event(title: $title,'
-        ' description: $description,'
-        ' maxParticipants: $maxParticipants,'
-        ' category: $category,'
-        ' location: $location,'
-        ' startDate: $startDate,'
-        ' endDate: $endDate,'
-        ' createdAt: $createdAt)';
   }
 }

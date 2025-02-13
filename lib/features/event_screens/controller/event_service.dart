@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ct_festival/features/auth_screens/model/admin_model.dart' as admin_auth;
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../../utils/logger.dart';
+//import '../../../utils/logger.dart';
 import '../../auth_screens/controller/auth_service.dart';
 import '../model/event_model.dart';
 
@@ -12,18 +12,15 @@ class EventService {
       firestore: FirebaseFirestore.instance,
       auth: FirebaseAuth.instance
   );
-  final AppLogger _appLogger = AppLogger();
+  //final AppLogger _appLogger = AppLogger();
 
   /// get all events
   Future<List<Event>> getAllEvents() async {
-    try {
-      final querySnapshot = await _firestore.collection('events').get();
-      final events = querySnapshot.docs.map((doc) => Event.fromMap(doc.data())).toList();
-      return events;
-    } catch (e, stackTrace) {
-      _appLogger.logError('Failed to fetch events: ${e.toString()}', stackTrace);
-      return [];
-    }
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('events').get();
+
+    return querySnapshot.docs.map((doc) {
+      return Event.fromFirestore(doc.data() as Map<String, dynamic>, doc.id);
+    }).toList();
   }
 
   /// create event
@@ -47,22 +44,13 @@ class EventService {
   }
 
   /// edit event (change event details)
-  Future<String> editEvent(String eventId, Event updatedEvent) async {
+  Future<String> editEvent(Event event) async {
     try {
-      final admin = _auth.currentUser;
-      if (admin == null) {
-        return 'Admin not authenticated';
-      }
-
-      final authAdmin = await _authService.getCurrentUser();
-      if (authAdmin is! admin_auth.Admin) {
-        return 'Only admins can edit events';
-      }
-
-      await _firestore.collection('events').doc(eventId).update(updatedEvent.toMap());
+      // Assume Firestore or any async update logic here
+      await FirebaseFirestore.instance.collection('events').doc(event.id).update(event.toMap());
       return 'Event updated successfully';
     } catch (e) {
-      return 'Failed to update event: ${e.toString()}';
+      return 'Failed to update event: $e';
     }
   }
 

@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ct_festival/utils/logger.dart';
-
 import '../../../event_screens/controller/event_service.dart';
 import '../../../event_screens/model/event_model.dart';
 
-class CreateEventDialog extends StatefulWidget {
-  const CreateEventDialog({super.key});
+class EditEventDialog extends StatefulWidget {
+  const EditEventDialog({super.key});
 
   @override
-  CreateEventDialogState createState() => CreateEventDialogState();
+  EditEventDialogState createState() => EditEventDialogState();
 }
 
-class CreateEventDialogState extends State<CreateEventDialog> {
+class EditEventDialogState extends State<EditEventDialog> {
   final TextEditingController eventNameController = TextEditingController();
   final TextEditingController eventDescriptionController = TextEditingController();
   final TextEditingController maxParticipantsController = TextEditingController();
@@ -22,7 +21,42 @@ class CreateEventDialogState extends State<CreateEventDialog> {
   final TextEditingController endDateController = TextEditingController();
   AppLogger logger = AppLogger();
 
+  Event? selectedEvent;
+  String? selectedEventId;
+  List<Map<String, dynamic>> events = [];
 
+  @override
+  void initState() {
+    super.initState();
+    _loadEvents();
+  }
+
+  /// Load all events
+  Future<void> _loadEvents() async {
+    final List<Event> eventDocs = await EventService().getAllEvents();
+    setState(() {
+      events = eventDocs.map((event) => {'id': event.id, 'data': event.toMap()}).toList();
+    });
+  }
+
+  /// Event selected callback
+  void _onEventSelected(Map<String, dynamic>? eventDoc) {
+    if (eventDoc != null) {
+      setState(() {
+        selectedEventId = eventDoc['id'];
+        selectedEvent = Event.fromMap(eventDoc['data']);
+        eventNameController.text = selectedEvent!.title;
+        eventDescriptionController.text = selectedEvent!.description;
+        maxParticipantsController.text = selectedEvent!.maxParticipants;
+        categoryController.text = selectedEvent!.category;
+        locationController.text = selectedEvent!.location;
+        startDateController.text = selectedEvent!.startDate.toString();
+        endDateController.text = selectedEvent!.endDate.toString();
+      });
+    }
+  }
+
+  /// Build the dialog
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -45,6 +79,7 @@ class CreateEventDialogState extends State<CreateEventDialog> {
     );
   }
 
+  /// Build the header
   Widget _buildHeader(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -59,7 +94,7 @@ class CreateEventDialogState extends State<CreateEventDialog> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text(
-              'Create Event',
+              'Edit Event',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 36,
@@ -76,12 +111,28 @@ class CreateEventDialogState extends State<CreateEventDialog> {
     );
   }
 
+  /// Build the event form
   Widget _buildEventForm(BuildContext context) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          DropdownButton<Map<String, dynamic>>(
+            value: (selectedEventId != null && events.any((event) => event['id'] == selectedEventId))
+                ? events.firstWhere((event) => event['id'] == selectedEventId)
+                : null,
+            hint: const Text('Select Event', style: TextStyle(color: Colors.white)),
+            items: events.map((eventDoc) {
+              return DropdownMenuItem<Map<String, dynamic>>(
+                value: eventDoc,
+                child: Text(eventDoc['data']['title']),
+              );
+            }).toList(),
+            onChanged: _onEventSelected,
+          ),
+
+
           _buildTextField(
             'Event Title',
             eventNameController,
@@ -138,38 +189,41 @@ class CreateEventDialogState extends State<CreateEventDialog> {
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () async {
-              final event = Event(
-                id: '',
-                title: eventNameController.text,
-                description: eventDescriptionController.text,
-                maxParticipants: maxParticipantsController.text,
-                category: categoryController.text,
-                location: locationController.text,
-                startDate: DateTime.parse(startDateController.text),
-                endDate: DateTime.parse(endDateController.text),
-                createdAt: DateTime.now(),
-              );
+              if (selectedEventId != null) {
+                final updatedEvent = Event(
+                  id: selectedEvent!.id,
+                  title: eventNameController.text,
+                  description: eventDescriptionController.text,
+                  maxParticipants: maxParticipantsController.text,
+                  category: categoryController.text,
+                  location: locationController.text,
+                  startDate: DateTime.parse(startDateController.text),
+                  endDate: DateTime.parse(endDateController.text),
+                  createdAt: selectedEvent!.createdAt,
+                );
 
-              final result = await EventService().createEvent(event);
-              logger.logInfo(result);
+                final result = await EventService().editEvent(updatedEvent);
+                logger.logInfo(result);
 
-              if (!context.mounted) return;
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(result)),
-              );
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(result)),
+                );
 
-              Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              }
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFFF2AF29),
             ),
-            child: const Text('Create Event', style: TextStyle(color: Colors.white)),
+            child: const Text('Update Event', style: TextStyle(color: Colors.white)),
           )
         ],
       ),
     );
   }
 
+  /// Build the date time field
   Widget _buildDateTimeField(
       BuildContext context,
       String label,
@@ -255,6 +309,7 @@ class CreateEventDialogState extends State<CreateEventDialog> {
     );
   }
 
+  /// Build the text field
   Widget _buildTextField(
       String label,
       TextEditingController controller,

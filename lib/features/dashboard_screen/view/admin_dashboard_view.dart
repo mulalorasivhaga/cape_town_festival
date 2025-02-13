@@ -42,6 +42,11 @@ class AdminDashboardView extends StatelessWidget with DashboardMixin {
                 onTap: () => showCreateEventDialog(context),
                 color: Color(0xFF474747),
               ),
+              buildCard(
+                title: 'Edit Event',
+                onTap: () => showEditEventDialog(context),
+                color: Color(0xFF474747),
+              ),
             ],
           ),
         ),

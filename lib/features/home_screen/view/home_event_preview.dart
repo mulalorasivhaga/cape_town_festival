@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:ct_festival/features/event_screens/model/event_model.dart';
 import 'package:ct_festival/utils/logger.dart';
+import 'package:intl/intl.dart';
 
 class HomeEventPreview extends StatelessWidget {
   final Event event;
@@ -12,26 +13,32 @@ class HomeEventPreview extends StatelessWidget {
     super.key,
     required this.event,
   }) {
-    _logger.logDebug('Initializing ManifestoDialog for ${event.title}');
+    _logger.logDebug('Initializing event dialog for ${event.title}');
   }
 
+  String _formatDateTime(DateTime dateTime) {
+    final DateFormat formatter = DateFormat('dd MMMM yyyy hh:mm a');
+    return formatter.format(dateTime);
+  }
+
+  /// Build the event preview dialog
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF242F40),
+      backgroundColor: const Color(0xFFAD343E),
       body: SingleChildScrollView(
         child: Column(
           children: [
             _buildHeader(context),
             const SizedBox(height: 20),
-            _buildManifestoContainer(),
+            _buildEventDetails(),
           ],
         ),
       ),
     );
   }
 
-  /// This method builds the header of the dialog
+  /// Build the header section
   Widget _buildHeader(BuildContext context) {
     return Stack(
       children: [
@@ -44,21 +51,21 @@ class HomeEventPreview extends StatelessWidget {
               Text(
                 event.title,
                 style: const TextStyle(
-                  color: Color(0xFFCCA43B),
-                  fontSize: 36,
+                  color: Colors.white,
+                  fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
                 textAlign: TextAlign.center,
-              ),
+              ), // title
               const SizedBox(height: 10),
               Text(
-                event.title,
+                'Tickets Available: ${event.maxParticipants}',
                 style: const TextStyle(
                   color: Color(0xFFFFFFFF),
-                  fontSize: 18,
+                  fontSize: 16,
                 ),
                 textAlign: TextAlign.center,
-              ),
+              ) // Add ticket availability here // maxParticipants
             ],
           ),
         ),
@@ -68,11 +75,11 @@ class HomeEventPreview extends StatelessWidget {
           child: IconButton(
             icon: const Icon(
               Icons.close,
-              color: Color(0xFFCCA43B),
+              color: Colors.white,
               size: 30,
             ),
             onPressed: () {
-              _logger.logDebug('Closing manifesto dialog for ${event.title}');
+              _logger.logDebug('Closing event dialog for ${event.title}');
               Navigator.of(context).pop();
             },
           ),
@@ -81,7 +88,8 @@ class HomeEventPreview extends StatelessWidget {
     );
   }
 
-  Widget _buildManifestoContainer() {
+  /// Build the event details
+  Widget _buildEventDetails() {
     return Center(
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 50),
@@ -89,19 +97,55 @@ class HomeEventPreview extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Divider(
-              color: Color(0xFFCCA43B),
+              color: Color(0xFFF2AF29),
               thickness: 2,
             ),
             const SizedBox(height: 20),
             Text(
-              event.description,
+              'Category: ${event.category}',
               style: const TextStyle(
-                color: Color(0xFFFFFFFF),
+                color: Colors.white,
                 fontSize: 16,
               ),
               textAlign: TextAlign.left,
-            ),
+            ), // category
             const SizedBox(height: 20),
+            Text(
+              event.description,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+              ),
+              textAlign: TextAlign.left,
+            ), // description
+            const SizedBox(height: 50),
+            Text(
+              'Location: ${event.location}',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+              ),
+              textAlign: TextAlign.left,
+            ), // location
+            const SizedBox(height: 10),
+            Text(
+              'Start Date: ${_formatDateTime(event.startDate)}',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+              ),
+              textAlign: TextAlign.left,
+            ), // startDate
+            const SizedBox(height: 10),
+            Text(
+              'End Date: ${_formatDateTime(event.endDate)}',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+              ),
+              textAlign: TextAlign.left,
+            ),// endDate
+            const SizedBox(height: 10),
           ],
         ),
       ),

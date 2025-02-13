@@ -21,7 +21,7 @@ class _HomeViewState extends State<HomeView> {
 
   int _getCrossAxisCount(double width) {
     if (width > 1200) {
-      return 3;  // Show 3 cards per row on large screens
+      return 4;  // Show 3 cards per row on large screens
     } else if (width > 800) {
       return 2;  // Show 2 cards per row on medium screens
     } else {
@@ -47,7 +47,7 @@ class _HomeViewState extends State<HomeView> {
                 child: Column(
                   children: [
                     _buildHeader(constraints),
-                    const SizedBox(height: 48),
+                    const SizedBox(height: 20),
                     _buildEventGrid(constraints),
                   ],
                 ),
@@ -93,7 +93,7 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  /// This method builds the candidate grid
+  /// This method builds the event grid
   Widget _buildEventGrid(BoxConstraints constraints) {
     return FutureBuilder<List<Event>>(
       future: _eventService.getAllEvents(),
@@ -140,7 +140,7 @@ class _HomeViewState extends State<HomeView> {
       height: 450, // Fixed height for all cards
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: const Color(0xFFE0E0CE),
+        color: const Color(0xFFAD343E),
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
@@ -158,7 +158,7 @@ class _HomeViewState extends State<HomeView> {
           CircleAvatar(
             radius: isMobile ? 80 : 100,
             //backgroundImage: AssetImage(event.imagePath),
-            backgroundColor: const Color(0xFFE0E0CE),
+            backgroundColor: Colors.white,
           ),
           const SizedBox(height: 20),
           Container(
@@ -166,8 +166,8 @@ class _HomeViewState extends State<HomeView> {
             child: Text(
               event.title,
               style: TextStyle(
-                color: Color(0xFFE0E0CE),
-                fontSize: isMobile ? 20 : 24,
+                color: Colors.white,
+                fontSize: isMobile ? 16 : 20,
                 fontWeight: FontWeight.bold,
               ),
               textAlign: TextAlign.center,
@@ -179,9 +179,9 @@ class _HomeViewState extends State<HomeView> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Text(
-              event.maxParticipants,
+             'Max Participants: ${event.maxParticipants}' ,
               style: TextStyle(
-                color: Color(0xFFE0E0CE),
+                color: Colors.white,
                 fontSize: isMobile ? 16 : 18,
               ),
               textAlign: TextAlign.center,
@@ -195,7 +195,7 @@ class _HomeViewState extends State<HomeView> {
             child: ElevatedButton(
               onPressed: () => _homeEventPreview(context, constraints, event),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFF2AF29),
+                backgroundColor: Color(0xFFF2AF29),
                 padding: const EdgeInsets.symmetric(
                   vertical: 16,
                 ),
@@ -206,7 +206,7 @@ class _HomeViewState extends State<HomeView> {
               child: const Text(
                 'More Information',
                 style: TextStyle(
-                  color: Color(0xFFE0E0CE),
+                  color: Colors.white,
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
                 ),
