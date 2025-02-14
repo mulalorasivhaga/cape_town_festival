@@ -1,7 +1,7 @@
 import 'package:ct_festival/features/dashboard_screen/view/admin_dashboard_view.dart';
 import 'package:ct_festival/features/auth_screens/view/login_view.dart';
 import 'package:ct_festival/features/auth_screens/view/reg_view.dart';
-import 'package:ct_festival/features/event_screens/view/event_view.dart';
+import 'package:ct_festival/features/dashboard_screen/view/user_dashboard_view.dart';
 import 'package:flutter/material.dart';
 import 'package:ct_festival/features/home_screen/view/home_view.dart';
 import 'package:ct_festival/utils/logger.dart';
@@ -69,15 +69,6 @@ class MainNav extends StatelessWidget {
               ),
             ),
             ListTile(
-              title: const Text('Events', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFFAD343E)),),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const EventView()),
-                );
-              },
-            ),
-            ListTile(
               title: const Text('Register'),
               onTap: () {
                 Navigator.push(
@@ -87,12 +78,23 @@ class MainNav extends StatelessWidget {
               },
             ),
             ListTile(
-              title: const Text('Login'),
+              title: const Text('My Account Dashboard'),
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LoginScreen()),
-                );
+                //check is user is logged in
+                final user = FirebaseAuth.instance.currentUser;
+                //if not logged in, navigate to login page
+                if (user == null) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  );
+                } else {
+                  //if logged in, navigate to user dashboard
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => UserDashboard()),
+                  );
+                }
               },
             ),
             ListTile(

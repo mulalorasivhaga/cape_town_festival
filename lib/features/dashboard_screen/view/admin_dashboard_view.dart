@@ -33,7 +33,7 @@ class AdminDashboardView extends StatelessWidget with DashboardMixin {
             ),
             children: [
               buildCard(
-                title: 'Admin Card',
+                title: 'Admin Details',
                 onTap: () => showProfileDialog(context),
                 color: Color(0xFF474747),
               ),

@@ -216,7 +216,7 @@ class EditEventDialogState extends State<EditEventDialog> {
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFFF2AF29),
             ),
-            child: const Text('Update Event', style: TextStyle(color: Colors.white)),
+            child: const Text('Confirm', style: TextStyle(color: Colors.white)),
           )
         ],
       ),

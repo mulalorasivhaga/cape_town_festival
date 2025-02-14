@@ -22,16 +22,17 @@ class BackToHomeNav extends StatelessWidget {
                 child: Tooltip(
                   message: 'Click to go back',
                   child: GestureDetector(
-                    onTap: () => Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (context) => MainNav()), // Replace HomeScreen with your home screen widget
-                          (Route<dynamic> route) => false,
-                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => MainNav()),
+                      );
+                    },
                     child: MouseRegion(
                       cursor: SystemMouseCursors.click,
                       child: Icon(
                           Icons.arrow_back_ios,
-                          color: Color(0xFFE0E0CE) // Use theme icon color
+                          color: Colors.black
                       ),
                     ),
                   ),

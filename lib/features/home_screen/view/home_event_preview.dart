@@ -17,7 +17,7 @@ class HomeEventPreview extends StatelessWidget {
   }
 
   String _formatDateTime(DateTime dateTime) {
-    final DateFormat formatter = DateFormat('dd MMMM yyyy hh:mm a');
+    final DateFormat formatter = DateFormat('dd MMMM yyyy (HH:mm a)');
     return formatter.format(dateTime);
   }
 
