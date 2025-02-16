@@ -63,12 +63,6 @@ class EventsScreenState extends State<EventsScreen> {
                         Text('End Date: ${dateFormat.format(event.endDate)}'),
                       ],
                     ),
-                    trailing: ElevatedButton(
-                      onPressed: () {
-                        // Handle RSVP action
-                      },
-                      child: const Text('RSVP'),
-                    ),
                   ),
                 );
               },
