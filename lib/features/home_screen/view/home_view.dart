@@ -2,8 +2,8 @@
 
 import 'package:ct_festival/utils/logger.dart';
 import 'package:flutter/material.dart';
-import 'package:ct_festival/features/event_screens/controller/event_service.dart';
-import 'package:ct_festival/features/event_screens/model/event_model.dart';
+import 'package:ct_festival/features/events_screen/controller/event_service.dart';
+import 'package:ct_festival/features/events_screen/model/event_model.dart';
 import 'package:ct_festival/features/home_screen/view/home_event_preview.dart';
 
 
@@ -14,7 +14,7 @@ class HomeView extends StatefulWidget {
   State<HomeView> createState() => _HomeViewState();
 }
 
-/// This class is the state for the HomeScreen widget
+/// This class is the state for the HomeScreen shared_widget
 class _HomeViewState extends State<HomeView> {
   final EventService _eventService = EventService();
   final AppLogger _logger = AppLogger();

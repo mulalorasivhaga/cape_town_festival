@@ -1,7 +1,7 @@
-// lib/widgets/manifesto_dialog.dart
+// lib/dialogs/manifesto_dialog.dart
 
 import 'package:flutter/material.dart';
-import 'package:ct_festival/features/event_screens/model/event_model.dart';
+import 'package:ct_festival/features/events_screen/model/event_model.dart';
 import 'package:ct_festival/utils/logger.dart';
 import 'package:intl/intl.dart';
 

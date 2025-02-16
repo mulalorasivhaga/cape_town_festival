@@ -1,13 +1,6 @@
-// users can see their profile details
-// users can RSVP to events
-// users can see their event RSVPs
-// users can change their RSVP until event datetime
-
-import 'package:ct_festival/features/home_screen/view/home_view.dart';
+import 'package:ct_festival/features/dashboard_screen/shared/mixin/dashboard_mixin.dart';
+import 'package:ct_festival/features/dashboard_screen/shared/widgets/logout_nav.dart';
 import 'package:flutter/material.dart';
-import 'package:ct_festival/features/dashboard_screen/view/widget/logout_nav.dart';
-import 'package:ct_festival/features/dashboard_screen/view/mixin/dashboard_mixin.dart';
-
 
 class UserDashboard extends StatelessWidget with DashboardMixin {
   UserDashboard({super.key});
@@ -38,8 +31,13 @@ class UserDashboard extends StatelessWidget with DashboardMixin {
                 color: const Color(0xFFAD343E),
               ),
               buildCard(
-                title: 'RSVP\nto Event',
+                title: 'Make\nRSVP',
                 onTap: () => showRsvpDialog(context),
+                color: const Color(0xFFAD343E),
+              ),
+              buildCard(
+                title: 'View\nRSVP',
+                onTap: () => showViewRsvpDialog(context),
                 color: const Color(0xFFAD343E),
               ),
             ],

@@ -1,46 +1,22 @@
-import 'package:ct_festival/features/dashboard_screen/view/admin_dashboard_view.dart';
 import 'package:ct_festival/features/auth_screens/view/login_view.dart';
 import 'package:ct_festival/features/auth_screens/view/reg_view.dart';
-import 'package:ct_festival/features/dashboard_screen/view/user_dashboard_view.dart';
+import 'package:ct_festival/features/dashboard_screen/user/view/user_dashboard_view.dart';
 import 'package:flutter/material.dart';
 import 'package:ct_festival/features/home_screen/view/home_view.dart';
 import 'package:ct_festival/utils/logger.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ct_festival/features/auth_screens/controller/auth_service.dart';
 
 class MainNav extends StatelessWidget {
   final AppLogger logger = AppLogger();
+  final AuthService authService = AuthService(
+    firestore: FirebaseFirestore.instance,
+    auth: FirebaseAuth.instance,
+  );
 
   MainNav({super.key});
 
-  //function to check if the user is an admin
-  Future<void> _checkAdmin(BuildContext context) async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      if (!context.mounted) return; // Ensure context is still valid
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
-      );
-      return;
-    }
-
-    final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
-    // Check if user is admin
-    if (!userDoc.exists || userDoc.data()?['role'] != 'admin') {
-      if (!context.mounted) return; // Check if context is still valid
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('This link is only for admin, not permitted for users')),
-      );
-      return;
-    }
-
-    if (!context.mounted) return; // Check before navigation
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => AdminDashboardView()),
-    );
-  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -73,23 +49,20 @@ class MainNav extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const RegScreen()),
+                  MaterialPageRoute(builder: (context) => RegScreen()),
                 );
               },
             ),
             ListTile(
-              title: const Text('My Account Dashboard'),
+              title: const Text('My Account'),
               onTap: () {
-                //check is user is logged in
                 final user = FirebaseAuth.instance.currentUser;
-                //if not logged in, navigate to login page
                 if (user == null) {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const LoginScreen()),
                   );
                 } else {
-                  //if logged in, navigate to user dashboard
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => UserDashboard()),
@@ -99,7 +72,7 @@ class MainNav extends StatelessWidget {
             ),
             ListTile(
               title: const Text('Admin'),
-              onTap: () => _checkAdmin(context),
+              onTap: () => authService.checkAdmin(context),
             ),
           ],
         ),

@@ -54,6 +54,15 @@ class EventService {
     }
   }
 
+  /// Get Event by ID
+  Future<Event> getEventById(String eventId) async {
+    final docSnapshot = await FirebaseFirestore.instance.collection('events').doc(eventId).get();
+    if (docSnapshot.exists) {
+      return Event.fromMap(docSnapshot.data()!);
+    } else {
+      throw Exception('Event not found');
+    }
+  }
 
 
 }

@@ -1,9 +1,8 @@
-import 'package:ct_festival/features/dashboard_screen/view/user_dashboard_view.dart';
 import 'package:flutter/material.dart';
-import 'package:ct_festival/config/routes.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ct_festival/config/routes.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,10 +11,15 @@ void main() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
-    runApp(ProviderScope
-      (child: const CtApp()));
+    runApp(
+      ProviderScope(
+        child: const CtApp(),
+      ),
+    );
   } catch (e) {
-    runApp(const MaterialApp(home: Center(child: CircularProgressIndicator())));
+    runApp(const MaterialApp(
+        home: Center(
+            child: CircularProgressIndicator())));
   }
 }
 
@@ -28,7 +32,7 @@ class CtApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Cape Town Festival',
       theme: ThemeData.light(),
-      home: UserDashboard(),
+      initialRoute: Routes.initial,
       routes: Routes.getRoutes(),
     );
   }

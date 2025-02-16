@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:ct_festival/features/event_screens/controller/event_service.dart';
-import 'package:ct_festival/features/event_screens/model/event_model.dart';
-import 'package:ct_festival/features/event_screens/controller/rsvp_service.dart';
+import 'package:ct_festival/features/events_screen/controller/event_service.dart';
+import 'package:ct_festival/features/events_screen/model/event_model.dart';
+import 'package:ct_festival/features/dashboard_screen/user/controller/rsvp_service.dart';
 import 'package:ct_festival/utils/logger.dart';
 
 class RsvpDialog extends StatefulWidget {
@@ -22,17 +22,22 @@ class RsvpDialogState extends State<RsvpDialog> {
   @override
   void initState() {
     super.initState();
+    logger.logInfo('Initializing RsvpDialog');
     _loadEvents();
   }
 
   /// Load all events
   Future<void> _loadEvents() async {
     final eventService = EventService();
-    final fetchedEvents = await eventService.getAllEvents();
-    if (mounted) {
+    try {
+      final fetchedEvents = await eventService.getAllEvents();
+      if (!context.mounted) return;
       setState(() {
         events = fetchedEvents;
       });
+      logger.logInfo('Loaded ${events.length} events');
+    } catch (e) {
+      logger.logError('Error loading events: $e');
     }
   }
 
@@ -56,6 +61,7 @@ class RsvpDialogState extends State<RsvpDialog> {
               setState(() {
                 selectedEvent = value;
               });
+              logger.logInfo('Selected event: ${value?.title}');
             },
           ),
           Row(
@@ -66,6 +72,7 @@ class RsvpDialogState extends State<RsvpDialog> {
                   setState(() {
                     isAttending = value!;
                   });
+                  logger.logInfo('Is attending: $isAttending');
                 },
               ),
               const Text('I am attending', style: TextStyle(fontSize: 16)),
@@ -76,15 +83,17 @@ class RsvpDialogState extends State<RsvpDialog> {
       actions: [
         TextButton(
           onPressed: () {
+            logger.logInfo('User cancelled RSVP');
             Navigator.of(context).pop();
           },
           child: const Text('Cancel', style: TextStyle(color: Colors.red, fontSize: 16)),
         ),
         ElevatedButton(
           onPressed: () async {
+            final localContext = context;
             if (selectedEvent != null && isAttending) {
               final confirm = await showDialog<bool>(
-                context: context,
+                context: localContext,
                 builder: (context) {
                   return AlertDialog(
                     title: const Text('Confirm RSVP', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
@@ -93,7 +102,7 @@ class RsvpDialogState extends State<RsvpDialog> {
                       TextButton(
                         onPressed: () {
                           Navigator.of(context).pop(false);
-                          logger.logWarning('User cancelled RSVP');
+                          logger.logWarning('User cancelled RSVP confirmation');
                         },
                         child: const Text('Cancel', style: TextStyle(color: Colors.red, fontSize: 16)),
                       ),
@@ -112,17 +121,24 @@ class RsvpDialogState extends State<RsvpDialog> {
               if (confirm == true) {
                 final user = FirebaseAuth.instance.currentUser;
                 if (user != null) {
-                  await rsvpService.createRsvp(user.uid, selectedEvent!.id, 'attending');
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('RSVP confirmed')),
-                  );
-                  Navigator.of(context).pop();
+                  try {
+                    await rsvpService.createRsvp(user.uid, selectedEvent!.id, 'attending');
+                    if (!localContext.mounted) return;
+                    ScaffoldMessenger.of(localContext).showSnackBar(
+                      const SnackBar(content: Text('RSVP confirmed')),
+                    );
+                    logger.logInfo('RSVP confirmed for event: ${selectedEvent!.title}');
+                    Navigator.of(localContext).pop();
+                  } catch (e) {
+                    logger.logError('Error creating RSVP: $e');
+                  }
                 }
               }
             } else {
-              ScaffoldMessenger.of(context).showSnackBar(
+              ScaffoldMessenger.of(localContext).showSnackBar(
                 const SnackBar(content: Text('Please select an event and confirm attendance')),
               );
+              logger.logWarning('User did not select an event or confirm attendance');
             }
           },
           child: const Text('RSVP', style: TextStyle(fontSize: 16)),

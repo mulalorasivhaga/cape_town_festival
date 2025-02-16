@@ -1,10 +1,11 @@
-import 'package:ct_festival/features/dashboard_screen/controller/user_profile_service.dart';
-import 'package:ct_festival/features/dashboard_screen/view/widget/create_event_dialog.dart';
-import 'package:ct_festival/features/dashboard_screen/view/widget/edit_event_dialog.dart';
-import 'package:ct_festival/features/dashboard_screen/view/widget/rsvp_dialog.dart';
+import 'package:ct_festival/features/auth_screens/view/login_view.dart';
+import 'package:ct_festival/features/dashboard_screen/admin/view/dialogs/create_event_dialog.dart';
+import 'package:ct_festival/features/dashboard_screen/admin/view/dialogs/edit_event_dialog.dart';
+import 'package:ct_festival/features/dashboard_screen/shared/widgets/profile_dialog.dart';
+import 'package:ct_festival/features/dashboard_screen/user/controller/user_profile_service.dart';
+import 'package:ct_festival/features/dashboard_screen/user/view/dialogs/make_rsvp_dialog.dart';
+import 'package:ct_festival/features/dashboard_screen/user/view/dialogs/view_user_rsvp.dart';
 import 'package:flutter/material.dart';
-import '../../../auth_screens/view/login_view.dart';
-import '../widget/profile_dialog.dart';
 import 'package:ct_festival/utils/logger.dart';
 
 mixin DashboardMixin {
@@ -100,7 +101,16 @@ mixin DashboardMixin {
     );
   }
 
-  /// Build the card widget
+  /// Function to show View RSVP Dialog
+  void showViewRsvpDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) => const ViewRsvpDialog(),
+    );
+  }
+
+  /// Build the card shared_widget
   Widget buildCard({
     required String title,
     required VoidCallback onTap,

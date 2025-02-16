@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ct_festival/utils/logger.dart';
 
-import '../../../event_screens/controller/event_service.dart';
-import '../../../event_screens/model/event_model.dart';
+import '../../../../events_screen/controller/event_service.dart';
+import '../../../../events_screen/model/event_model.dart';
 
 class CreateEventDialog extends StatefulWidget {
   const CreateEventDialog({super.key});

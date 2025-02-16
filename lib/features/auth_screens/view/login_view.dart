@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:ct_festival/utils/logger.dart';
 import 'package:ct_festival/features/auth_screens/controller/auth_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../dashboard_screen/view/admin_dashboard_view.dart';
-import '../../dashboard_screen/view/user_dashboard_view.dart';
+import '../../dashboard_screen/admin/view/admin_dashboard_view.dart';
+import '../../dashboard_screen/user/view/user_dashboard_view.dart';
 
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -136,7 +136,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
-  /// This method builds the LoginScreen widget
+  /// This method builds the LoginScreen shared_widget
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -173,7 +173,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  /// This method builds the header section of the LoginScreen widget
+  /// This method builds the header section of the LoginScreen shared_widget
   Widget _buildHeader(BoxConstraints constraints) {
     final bool isMobile = constraints.maxWidth <= 600;
 
@@ -206,7 +206,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  /// This method builds the login container section of the LoginScreen widget
+  /// This method builds the login container section of the LoginScreen shared_widget
   Widget _buildLoginContainer(BoxConstraints constraints) {
     final bool isMobile = constraints.maxWidth <= 600;
     final double containerWidth = isMobile ? constraints.maxWidth * 0.95 : 800;
@@ -242,7 +242,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  /// This method builds the input field section of the LoginScreen widget
+  /// This method builds the input field section of the LoginScreen shared_widget
   Widget _buildInputField({
     required String title,
     required String hintText,
@@ -295,7 +295,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  /// This method builds the password field section of the LoginScreen widget
+  /// This method builds the password field section of the LoginScreen shared_widget
   Widget _buildPasswordField(BoxConstraints constraints) {
     final bool isMobile = constraints.maxWidth <= 600;
 
@@ -350,7 +350,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  /// This method builds the submit button section of the LoginScreen widget
+  /// This method builds the submit button section of the LoginScreen shared_widget
   Widget _buildSubmitButton(BoxConstraints constraints) {
     final bool isMobile = constraints.maxWidth <= 600;
 
