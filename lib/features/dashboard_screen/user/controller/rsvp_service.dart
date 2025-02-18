@@ -19,19 +19,17 @@ class RsvpService {
     await FirebaseFirestore.instance.collection('rsvp').add(rsvp.toMap());
   }
 
-  /// Get all RSVPs
   Future<List<Rsvp>> getAllRsvps() async {
     final querySnapshot = await FirebaseFirestore.instance.collection('rsvp').get();
-    return querySnapshot.docs.map((doc) => Rsvp.fromMap(doc.data())).toList();
+    return querySnapshot.docs.map((doc) => Rsvp.fromMap(doc.data(), doc.id)).toList();
   }
 
-  /// Get RSVPs by User ID
   Future<List<Rsvp>> getRsvpsByUserId(String userId) async {
     final querySnapshot = await FirebaseFirestore.instance
         .collection('rsvp')
         .where('userId', isEqualTo: userId)
         .get();
-    return querySnapshot.docs.map((doc) => Rsvp.fromMap(doc.data())).toList();
+    return querySnapshot.docs.map((doc) => Rsvp.fromMap(doc.data(), doc.id)).toList();
   }
 
   /// Fetch RSVPs for the current user

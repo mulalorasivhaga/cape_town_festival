@@ -1,3 +1,4 @@
+import 'package:ct_festival/features/analytics_screen/views/analytics_view.dart';
 import 'package:ct_festival/features/events_screen/view/events_screen.dart';
 import 'package:ct_festival/features/home_screen/view/home_view.dart';
 import 'package:ct_festival/shared/navigation/view/main_nav.dart';
@@ -16,6 +17,8 @@ class Routes {
   static const String register = '/registerView';
   static const String dashboard = '/dashboard';
   static const String events = '/events';
+  static const String analytics = '/analytics';
+
 
 
   // Define route generation
@@ -26,6 +29,7 @@ class Routes {
       login: (context) => const LoginScreen(),
       register: (context) => const RegScreen(),
       events: (context) => const EventsScreen(),
+      analytics: (context) => const AnalyticsView(),
       dashboard: (context) => ProviderScope(
         child: Consumer(
           builder: (context, ref, child) {
