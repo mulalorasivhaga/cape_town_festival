@@ -65,7 +65,7 @@ class AnalyticsService {
     }
   }
 
-  /// Get RSVPs for each specific event and return data
+  /// Get event titles and RSVP count for each specific event and return data
   Future<List<Map<String, dynamic>>> getRsvpData() async {
     try {
       final querySnapshot = await _firestore.collection('events').get();
@@ -89,6 +89,33 @@ class AnalyticsService {
       throw Exception('Error fetching RSVP data for pie graph: $e');
     }
   }
+
+
+  /// Get event category and RSVP count for each specific event and return data
+  Future<List<Map<String, dynamic>>> getRsvpCategoryData() async {
+    try {
+      final querySnapshot = await _firestore.collection('events').get();
+      List<Map<String, dynamic>> rsvpCategoryData = [];
+
+      for (var doc in querySnapshot.docs) {
+        String eventId = doc.id;
+        String eventCategory = doc['category'];
+        int rsvpCount = await getRsvpForEvent(eventId);
+
+        rsvpCategoryData.add({
+          'eventCategory': eventCategory,
+          'rsvpCount': rsvpCount,
+        });
+      }
+
+      logger.logInfo("RSVP data for category graph: $rsvpCategoryData");
+      return rsvpCategoryData;
+    } catch (e) {
+      logger.logError("Error fetching RSVP data for category graph: $e");
+      throw Exception('Error fetching RSVP data for category graph: $e');
+    }
+  }
+
 }
 
 
