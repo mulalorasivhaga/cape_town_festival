@@ -16,7 +16,7 @@ class AnalyticsView extends StatelessWidget {
         future: analyticsService.getRsvpData(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator(color: Color(0xFFAD343E),));
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
@@ -30,9 +30,10 @@ class AnalyticsView extends StatelessWidget {
                   child: CounterContainer(analyticsService: analyticsService),
                 ),
                 const SizedBox(height: 10),
-                Expanded(
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.35, // Ensures the chart does not take full space,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 32),
+                    padding: const EdgeInsets.symmetric(vertical:10, horizontal: 16),
                     child: ChartContainer(data: snapshot.data!),
                   ),
                 ),
