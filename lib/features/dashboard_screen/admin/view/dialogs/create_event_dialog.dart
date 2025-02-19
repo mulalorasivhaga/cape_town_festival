@@ -195,8 +195,7 @@ class CreateEventDialogState extends State<CreateEventDialog> {
                     primary: Color(0xFFAD343E), // header background color
                     onPrimary: Colors.white, // header text color
                     onSurface: Colors.black, // body text color
-                  ),
-                  dialogBackgroundColor: Colors.white, // background color
+                  ), dialogTheme: DialogThemeData(backgroundColor: Colors.white), // background color
                 ),
                 child: child!,
               );
@@ -215,8 +214,7 @@ class CreateEventDialogState extends State<CreateEventDialog> {
                       primary: Color(0xFFAD343E), // header background color
                       onPrimary: Colors.white, // header text color
                       onSurface: Colors.black, // body text color
-                    ),
-                    dialogBackgroundColor: Colors.white, // background color
+                    ), dialogTheme: DialogThemeData(backgroundColor: Colors.white), // background color
                   ),
                   child: child!,
                 );

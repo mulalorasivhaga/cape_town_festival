@@ -13,7 +13,7 @@ class LeaderboardTable extends StatelessWidget {
     data.sort((a, b) => b['rsvpCount'].compareTo(a['rsvpCount']));
 
     return Container(
-      width: screenWidth * 0.9, // Adjust width to fit the screen
+      width: screenWidth * 1.0, // Adjust width to fit the screen
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         color: Colors.white,

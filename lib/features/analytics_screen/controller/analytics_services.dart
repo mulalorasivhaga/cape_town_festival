@@ -17,7 +17,7 @@ class AnalyticsService {
     try {
       final querySnapshot = await _firestore.collection('users').get();
       final totalUsers = querySnapshot.docs.length;
-      logger.logInfo("Total users: $totalUsers");
+      //logger.logInfo("Total users: $totalUsers");
       return totalUsers;
     } catch (e) {
       logger.logError("Error fetching total users: $e");
@@ -29,7 +29,7 @@ class AnalyticsService {
     try {
       final querySnapshot = await _firestore.collection('events').get();
       final totalEvents = querySnapshot.docs.length;
-      logger.logInfo("Total events: $totalEvents");
+      //logger.logInfo("Total events: $totalEvents");
       return totalEvents;
     } catch (e) {
       logger.logError("Error fetching total events: $e");
@@ -41,7 +41,7 @@ class AnalyticsService {
     try {
       final querySnapshot = await _firestore.collection('rsvp').get();
       final totalRsvp = querySnapshot.docs.length;
-      logger.logInfo("Total rsvp: $totalRsvp");
+      //logger.logInfo("Total rsvp: $totalRsvp");
       return totalRsvp;
     } catch (e) {
       logger.logError("Error fetching total rsvp: $e");
@@ -57,7 +57,7 @@ class AnalyticsService {
           .where('eventId', isEqualTo: eventId)
           .get();
       final totalRsvp = querySnapshot.docs.length;
-      logger.logInfo("Total RSVPs for event $eventId: $totalRsvp");
+      //logger.logInfo("Total RSVPs for event $eventId: $totalRsvp");
       return totalRsvp;
     } catch (e) {
       logger.logError("Error fetching RSVPs for event $eventId: $e");
@@ -82,14 +82,13 @@ class AnalyticsService {
         });
       }
 
-      logger.logInfo("RSVP data for pie graph: $rsvpData");
+      //logger.logInfo("RSVP data for pie graph: $rsvpData");
       return rsvpData;
     } catch (e) {
       logger.logError("Error fetching RSVP data for pie graph: $e");
       throw Exception('Error fetching RSVP data for pie graph: $e');
     }
   }
-
 
   /// Get event category and RSVP count for each specific event and return data
   Future<List<Map<String, dynamic>>> getRsvpCategoryData() async {
@@ -108,7 +107,7 @@ class AnalyticsService {
         });
       }
 
-      logger.logInfo("RSVP data for category graph: $rsvpCategoryData");
+      //logInfo("RSVP data for category graph: $rsvpCategoryData");
       return rsvpCategoryData;
     } catch (e) {
       logger.logError("Error fetching RSVP data for category graph: $e");
@@ -116,6 +115,76 @@ class AnalyticsService {
     }
   }
 
+  /// Get age per user
+  Future<List<Map<String, dynamic>>> getAgePerUser() async {
+    try {
+      final querySnapshot = await _firestore.collection('users').get();
+      List<Map<String, dynamic>> ageData = [];
+
+      for (var doc in querySnapshot.docs) {
+        String userId = doc.id;
+        int age = doc['age'];
+
+        ageData.add({
+          'userId': userId,
+          'age': age,
+        });
+      }
+
+      //.logInfo("Age data for user: $ageData");
+      return ageData;
+    } catch (e) {
+      logger.logError("Error fetching age data for user: $e");
+      throw Exception('Error fetching age data for user: $e');
+    }
+  }
+
+  /// get gender per user
+  Future<List<Map<String, dynamic>>> getGenderPerUser() async {
+    try {
+      final querySnapshot = await _firestore.collection('users').get();
+      List<Map<String, dynamic>> genderData = [];
+
+      for (var doc in querySnapshot.docs) {
+        String userId = doc.id;
+        String gender = doc['gender'];
+
+        genderData.add({
+          'userId': userId,
+          'gender': gender,
+        });
+      }
+
+      //logger.logInfo("Gender data for user: $genderData");
+      return genderData;
+    } catch (e) {
+      logger.logError("Error fetching gender data for user: $e");
+      throw Exception('Error fetching gender data for user: $e');
+    }
+  }
+
+  ///get total gender in users collection
+  /// Get total gender count in users collection
+  Future<Map<String, int>> getTotalGenderCount() async {
+    try {
+      final querySnapshot = await _firestore.collection('users').get();
+      Map<String, int> genderCount = {};
+
+      for (var doc in querySnapshot.docs) {
+        String gender = doc['gender'];
+        if (genderCount.containsKey(gender)) {
+          genderCount[gender] = genderCount[gender]! + 1;
+        } else {
+          genderCount[gender] = 1;
+        }
+      }
+
+      return genderCount;
+    } catch (e) {
+      logger.logError("Error fetching total gender count: $e");
+      throw Exception('Error fetching total gender count: $e');
+    }
+  }
 }
 
 
