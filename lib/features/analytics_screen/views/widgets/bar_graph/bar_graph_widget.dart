@@ -98,6 +98,22 @@ class BarGraphWidget extends StatelessWidget {
                     topTitles: AxisTitles(
                       sideTitles: SideTitles(showTitles: false),
                     ),
+                    leftTitles: AxisTitles(
+                      axisNameWidget: const Padding(
+                        padding: EdgeInsets.only(left: 25.0, bottom: 0.0),
+                        child: Text(
+                          'Number of users',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      sideTitles: SideTitles(
+                        showTitles: false,
+                        reservedSize: 40,
+                      ),
+                    ),
                     rightTitles: AxisTitles(
                       sideTitles: SideTitles(showTitles: false),
                     ),

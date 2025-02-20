@@ -56,12 +56,10 @@ class AnalyticsService {
           .collection('rsvp')
           .where('eventId', isEqualTo: eventId)
           .get();
-      final totalRsvp = querySnapshot.docs.length;
-      //logger.logInfo("Total RSVPs for event $eventId: $totalRsvp");
-      return totalRsvp;
+      return querySnapshot.docs.length;
     } catch (e) {
-      logger.logError("Error fetching RSVPs for event $eventId: $e");
-      throw Exception('Error fetching RSVPs for event $eventId: $e');
+      logger.logError("Error getting RSVP count for event $eventId: $e");
+      return 0;
     }
   }
 
@@ -71,22 +69,34 @@ class AnalyticsService {
       final querySnapshot = await _firestore.collection('events').get();
       List<Map<String, dynamic>> rsvpData = [];
 
+      logger.logInfo("Found ${querySnapshot.docs.length} events");
+
       for (var doc in querySnapshot.docs) {
         String eventId = doc.id;
-        String eventTitle = doc['title'];
+        Map<String, dynamic> data = doc.data();
+        String eventTitle = data['title']?.toString() ?? 'Untitled Event';
+        
         int rsvpCount = await getRsvpForEvent(eventId);
-
-        rsvpData.add({
-          'eventTitle': eventTitle,
-          'rsvpCount': rsvpCount,
-        });
+        
+        // Always add the event
+        Map<String, dynamic> eventData = {
+          'label': eventTitle,
+          'value': rsvpCount,
+        };
+        
+        logger.logInfo("Adding event data: $eventData");
+        rsvpData.add(eventData);
       }
 
-      //logger.logInfo("RSVP data for pie graph: $rsvpData");
+      // Sort by RSVP count
+      rsvpData.sort((a, b) => (b['value'] as int).compareTo(a['value'] as int));
+
+      logger.logInfo("Final RSVP data: $rsvpData");
       return rsvpData;
     } catch (e) {
-      logger.logError("Error fetching RSVP data for pie graph: $e");
-      throw Exception('Error fetching RSVP data for pie graph: $e');
+      logger.logError("Error in getRsvpData: $e");
+      // Return empty list instead of throwing
+      return [];
     }
   }
 
@@ -94,78 +104,69 @@ class AnalyticsService {
   Future<List<Map<String, dynamic>>> getRsvpCategoryData() async {
     try {
       final querySnapshot = await _firestore.collection('events').get();
-      List<Map<String, dynamic>> rsvpCategoryData = [];
+      Map<String, int> categoryTotals = {};
 
+      logger.logInfo("Found ${querySnapshot.docs.length} events for categories");
+
+      // First, aggregate all RSVPs by category
       for (var doc in querySnapshot.docs) {
-        String eventId = doc.id;
-        String eventCategory = doc['category'];
-        int rsvpCount = await getRsvpForEvent(eventId);
-
-        rsvpCategoryData.add({
-          'eventCategory': eventCategory,
-          'rsvpCount': rsvpCount,
-        });
+        Map<String, dynamic> data = doc.data();
+        String category = data['category']?.toString() ?? 'Uncategorized';
+        int rsvpCount = await getRsvpForEvent(doc.id);
+        
+        logger.logInfo("Category: $category, RSVP Count: $rsvpCount");
+        
+        // Add to category total
+        categoryTotals[category] = (categoryTotals[category] ?? 0) + rsvpCount;
       }
 
-      //logInfo("RSVP data for category graph: $rsvpCategoryData");
-      return rsvpCategoryData;
+      // Convert to format expected by PieChartWidget
+      List<Map<String, dynamic>> formattedData = categoryTotals.entries
+          .map((entry) => {
+                'label': entry.key,
+                'value': entry.value,
+              })
+          .toList();
+
+      // Sort by count
+      formattedData.sort((a, b) => (b['value'] as int).compareTo(a['value'] as int));
+
+      logger.logInfo("Final category data: $formattedData");
+      return formattedData;
     } catch (e) {
-      logger.logError("Error fetching RSVP data for category graph: $e");
-      throw Exception('Error fetching RSVP data for category graph: $e');
+      logger.logError("Error in getRsvpCategoryData: $e");
+      // Return empty list instead of throwing
+      return [];
     }
   }
 
-  ///get age per user, count ages within age range and store in a list
+  /// Get age per user
   Future<List<Map<String, dynamic>>> getAgePerUser() async {
     try {
       final querySnapshot = await _firestore.collection('users').get();
       Map<String, int> ageGroups = {
-        '< 12': 0,
+        'Under 12': 0,
         '13-18': 0,
         '19-35': 0,
         '36-65': 0,
-        '> 65': 0,
+        'Over 65': 0,
       };
 
       for (var doc in querySnapshot.docs) {
-        try {
-          if (doc.data().containsKey('age')) {
-            var ageData = doc['age'];
-            logger.logInfo('Raw age data for user ${doc.id}: $ageData (${ageData.runtimeType})');
-            
-            // Handle different age data types
-            int age;
-            if (ageData is int) {
-              age = ageData;
-            } else if (ageData is String) {
-              age = int.tryParse(ageData) ?? 0;
-            } else {
-              logger.logError('Unexpected age data type for user ${doc.id}: ${ageData.runtimeType}');
-              continue;
-            }
-
-            // Skip invalid ages
-            if (age <= 0) {
-              logger.logError('Invalid age value for user ${doc.id}: $age');
-              continue;
-            }
-
-            // Group the age
-            if (age < 12) {
-              ageGroups['< 12'] = ageGroups['< 12']! + 1;
-            } else if (age >= 13 && age <= 18) {
-              ageGroups['13-18'] = ageGroups['13-18']! + 1;
-            } else if (age >= 19 && age <= 35) {
-              ageGroups['19-35'] = ageGroups['19-35']! + 1;
-            } else if (age >= 36 && age <= 65) {
-              ageGroups['36-65'] = ageGroups['36-65']! + 1;
-            } else {
-              ageGroups['< 65'] = ageGroups['> 65']! + 1;
-            }
+        if (doc.data().containsKey('age')) {
+          // Parse the age string to integer
+          int age = int.parse(doc['age'].toString());
+          if (age < 12) {
+            ageGroups['Under 12'] = ageGroups['Under 12']! + 1;
+          } else if (age >= 13 && age <= 18) {
+            ageGroups['13-18'] = ageGroups['13-18']! + 1;
+          } else if (age >= 19 && age <= 35) {
+            ageGroups['19-35'] = ageGroups['19-35']! + 1;
+          } else if (age >= 36 && age <= 65) {
+            ageGroups['36-65'] = ageGroups['36-65']! + 1;
+          } else {
+            ageGroups['Over 65'] = ageGroups['Over 65']! + 1;
           }
-        } catch (docError) {
-          logger.logError('Error processing user ${doc.id}: $docError');
-          continue; // Skip this document and continue with the next
         }
       }
 
@@ -236,3 +237,5 @@ class AnalyticsService {
     }
   }
 }
+
+

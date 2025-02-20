@@ -43,8 +43,6 @@ class AnalyticsView extends StatelessWidget {
                   children: [
                     /// Counter Cards
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         CounterCard(
                           title: 'Total Events',
@@ -109,20 +107,28 @@ class AnalyticsView extends StatelessWidget {
                     const SizedBox(height: 20),
                     ///  RSVP & Category Charts Row
                     SizedBox(
-                      height: screenHeight * 0.6, // Increased height
+                      height: screenHeight * 0.6,
                       child: Row(
                         children: [
                           Expanded(
-                            child: PieChartWidget(
-                              data: rsvpData,
-                              title: 'RSVP Distribution',
+                            child: Card(
+                              child: PieChartWidget(
+                                data: rsvpData.isNotEmpty 
+                                    ? rsvpData 
+                                    : [{'label': 'No Data', 'value': 1}],
+                                title: 'RSVP Distribution (Per Event)',
+                              ),
                             ),
                           ),
                           const SizedBox(width: 16),
                           Expanded(
-                            child: PieChartWidget(
-                              data: categoryData,
-                              title: 'Category Distribution',
+                            child: Card(
+                              child: PieChartWidget(
+                                data: categoryData.isNotEmpty 
+                                    ? categoryData 
+                                    : [{'label': 'No Data', 'value': 1}],
+                                title: 'RSVP Distribution (Per Category)',
+                              ),
                             ),
                           ),
                         ],

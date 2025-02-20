@@ -40,24 +40,37 @@ class CounterCardState extends State<CounterCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: _isLoading
-            ? const CircularProgressIndicator()
-            : Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              widget.title,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              '$_count',
-              style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
-            ),
-          ],
+    return Expanded(
+      child: Card(
+        margin: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: Container(
+          height: 120,
+          padding: const EdgeInsets.all(16.0),
+          child: _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      widget.title,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      '$_count',
+                      style: const TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFFAD343E),
+                      ),
+                    ),
+                  ],
+                ),
         ),
       ),
     );

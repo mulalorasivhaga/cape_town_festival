@@ -3,20 +3,27 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:ct_festival/features/analytics_screen/views/widgets/pie_graph/chart_colours.dart';
 
-class PieChartWidget extends StatelessWidget {
+class PieChartWidget extends StatefulWidget {
   final List<Map<String, dynamic>> data;
   final String title;
 
   const PieChartWidget({required this.data, required this.title, super.key});
 
   @override
+  State<PieChartWidget> createState() => _PieChartWidgetState();
+}
+
+class _PieChartWidgetState extends State<PieChartWidget> {
+  int touchedIndex = -1;
+
+  @override
   Widget build(BuildContext context) {
-    if (data.isEmpty) {
+    if (widget.data.isEmpty) {
       return const Center(child: Text('No data available'));
     }
 
     final dataMap = <String, double>{};
-    for (var item in data) {
+    for (var item in widget.data) {
       final label = item['label'] as String?;
       final value = item['value'] as int?;
       if (label != null && value != null) {
@@ -35,16 +42,21 @@ class PieChartWidget extends StatelessWidget {
         List<PieChartSectionData> sections = dataMap.entries.map((entry) {
           final index = dataMap.keys.toList().indexOf(entry.key);
           final color = ChartColors.getPartyColor(index);
+          final isTouched = index == touchedIndex;
+          final fontSize = isTouched ? 20.0 : 16.0;
+          final radius = isTouched ? (isWideScreen ? 60.0 : 50.0) : (isWideScreen ? 50.0 : 40.0);
+          
           return PieChartSectionData(
             color: color,
             value: entry.value,
-            title: entry.value.toStringAsFixed(0),
-            radius: isWideScreen ? 50 : 40,
+            title: '${entry.key}\n${entry.value.toInt()}',
+            radius: radius,
             titleStyle: TextStyle(
-              fontSize: isWideScreen ? 12 : 10,
+              fontSize: fontSize,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: Colors.black,
             ),
+            showTitle: isTouched,
           );
         }).toList();
 
@@ -65,7 +77,7 @@ class PieChartWidget extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: Text(
-                  title,
+                  widget.title,
                   style: TextStyle(
                     fontSize: isWideScreen ? 16 : 14,
                     fontWeight: FontWeight.bold,
@@ -79,6 +91,21 @@ class PieChartWidget extends StatelessWidget {
                     sections: sections,
                     sectionsSpace: 2,
                     centerSpaceRadius: isWideScreen ? 40 : 30,
+                    pieTouchData: PieTouchData(
+                      touchCallback: (FlTouchEvent event, pieTouchResponse) {
+                        setState(() {
+                          if (!event.isInterestedForInteractions ||
+                              pieTouchResponse == null ||
+                              pieTouchResponse.touchedSection == null) {
+                            touchedIndex = -1;
+                            return;
+                          }
+                          touchedIndex = pieTouchResponse.touchedSection!.touchedSectionIndex;
+                        });
+                      },
+                      mouseCursorResolver: (event, response) =>
+                          response != null ? SystemMouseCursors.click : SystemMouseCursors.basic,
+                    ),
                     borderData: FlBorderData(show: false),
                   ),
                 ),
@@ -110,7 +137,7 @@ class PieChartWidget extends StatelessWidget {
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
-                                '${entry.key}: ${entry.value.toStringAsFixed(0)}',
+                                '${entry.key}: ${entry.value.toInt()}',
                                 style: TextStyle(
                                   fontSize: isWideScreen ? 12 : 10,
                                 ),
