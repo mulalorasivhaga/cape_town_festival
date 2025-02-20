@@ -5,6 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ct_festival/features/analytics_screen/views/widgets/pie_graph/pie_chart_widget.dart';
 import 'package:ct_festival/features/analytics_screen/views/widgets/table/leaderboard_table.dart';
 import 'package:ct_festival/features/analytics_screen/controller/analytics_services.dart';
+import 'package:ct_festival/features/analytics_screen/views/widgets/bar_graph/bar_graph_widget.dart';
+import 'dart:math' as math;
 
 class AnalyticsView extends StatelessWidget {
   const AnalyticsView({super.key});
@@ -15,10 +17,12 @@ class AnalyticsView extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      body: FutureBuilder<List<List<Map<String, dynamic>>>>(
+      backgroundColor: Color(0xFF474747),
+      body: FutureBuilder<List<dynamic>>(
         future: Future.wait([
           analyticsService.getRsvpData(),
           analyticsService.getRsvpCategoryData(),
+          analyticsService.getTotalGenderCount(),
         ]),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -28,9 +32,9 @@ class AnalyticsView extends StatelessWidget {
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(child: Text('No data available'));
           } else {
-            final rsvpData = snapshot.data![0];
-            final categoryData = snapshot.data![1];
-
+            final rsvpData = (snapshot.data![0] as List<dynamic>).cast<Map<String, dynamic>>();
+            final categoryData = (snapshot.data![1] as List<dynamic>).cast<Map<String, dynamic>>();
+            final genderData = (snapshot.data![2] as List<dynamic>).cast<Map<String, dynamic>>();
             return SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
@@ -57,8 +61,49 @@ class AnalyticsView extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    /// TODO: Age/User Bar Graph/// Gender Pie Graph
-
+                    /// Gender Distribution and Age Bar Graph Row
+                    SizedBox(
+                      height: screenHeight * 0.4,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex: 3, // 30% of the width
+                            child: PieChartWidget(
+                              data: genderData,
+                              title: 'Gender Distribution',
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            flex: 7, // 70% of the width
+                            child: FutureBuilder<List<Map<String, dynamic>>>(
+                              future: analyticsService.getAgePerUser(),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  double maxY = snapshot.data!.fold(0.0, (max, item) => 
+                                    math.max(max, (item['value'] as int).toDouble()));
+                                  
+                                  return BarGraphWidget(
+                                    data: snapshot.data!,
+                                    title: 'Age Distribution',
+                                    maxY: maxY + (maxY * 0.1),
+                                    barColor: Colors.blue,
+                                  );
+                                } else if (snapshot.hasError) {
+                                  return Text('Error: ${snapshot.error}');
+                                }
+                                return const Center(
+                                  child: CircularProgressIndicator(
+                                    color: Color(0xFFAD343E),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
                     /// Leaderboard Table
                     LeaderboardTable(data: rsvpData),
                     const SizedBox(height: 20),

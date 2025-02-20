@@ -115,27 +115,71 @@ class AnalyticsService {
     }
   }
 
-  /// Get age per user
+  ///get age per user, count ages within age range and store in a list
   Future<List<Map<String, dynamic>>> getAgePerUser() async {
     try {
       final querySnapshot = await _firestore.collection('users').get();
-      List<Map<String, dynamic>> ageData = [];
+      Map<String, int> ageGroups = {
+        '< 12': 0,
+        '13-18': 0,
+        '19-35': 0,
+        '36-65': 0,
+        '> 65': 0,
+      };
 
       for (var doc in querySnapshot.docs) {
-        String userId = doc.id;
-        int age = doc['age'];
+        try {
+          if (doc.data().containsKey('age')) {
+            var ageData = doc['age'];
+            logger.logInfo('Raw age data for user ${doc.id}: $ageData (${ageData.runtimeType})');
+            
+            // Handle different age data types
+            int age;
+            if (ageData is int) {
+              age = ageData;
+            } else if (ageData is String) {
+              age = int.tryParse(ageData) ?? 0;
+            } else {
+              logger.logError('Unexpected age data type for user ${doc.id}: ${ageData.runtimeType}');
+              continue;
+            }
 
-        ageData.add({
-          'userId': userId,
-          'age': age,
-        });
+            // Skip invalid ages
+            if (age <= 0) {
+              logger.logError('Invalid age value for user ${doc.id}: $age');
+              continue;
+            }
+
+            // Group the age
+            if (age < 12) {
+              ageGroups['< 12'] = ageGroups['< 12']! + 1;
+            } else if (age >= 13 && age <= 18) {
+              ageGroups['13-18'] = ageGroups['13-18']! + 1;
+            } else if (age >= 19 && age <= 35) {
+              ageGroups['19-35'] = ageGroups['19-35']! + 1;
+            } else if (age >= 36 && age <= 65) {
+              ageGroups['36-65'] = ageGroups['36-65']! + 1;
+            } else {
+              ageGroups['< 65'] = ageGroups['> 65']! + 1;
+            }
+          }
+        } catch (docError) {
+          logger.logError('Error processing user ${doc.id}: $docError');
+          continue; // Skip this document and continue with the next
+        }
       }
 
-      //.logInfo("Age data for user: $ageData");
-      return ageData;
+      // Transform the ageGroups map to the desired format
+      List<Map<String, dynamic>> formattedAgeGroups = ageGroups.entries.map((entry) => {
+        'label': entry.key,
+        'value': entry.value,
+      }).toList();
+      
+      logger.logInfo('Age groups distribution: $formattedAgeGroups');
+      return formattedAgeGroups;
     } catch (e) {
-      logger.logError("Error fetching age data for user: $e");
-      throw Exception('Error fetching age data for user: $e');
+      logger.logError("Error fetching age groups data: $e");
+      throw Exception('Error fetching age groups data: $e');
     }
   }
 
@@ -164,29 +208,31 @@ class AnalyticsService {
   }
 
   ///get total gender in users collection
-  /// Get total gender count in users collection
-  Future<Map<String, int>> getTotalGenderCount() async {
+  Future<List<Map<String, dynamic>>> getTotalGenderCount() async {
     try {
       final querySnapshot = await _firestore.collection('users').get();
-      Map<String, int> genderCount = {};
+      Map<String, int> genderCount = {'Male': 0, 'Female': 0};
 
       for (var doc in querySnapshot.docs) {
-        String gender = doc['gender'];
-        if (genderCount.containsKey(gender)) {
-          genderCount[gender] = genderCount[gender]! + 1;
-        } else {
-          genderCount[gender] = 1;
+        if (doc.data().containsKey('gender')) {
+          String gender = doc['gender'];
+          if (genderCount.containsKey(gender)) {
+            genderCount[gender] = genderCount[gender]! + 1;
+          }
         }
       }
 
-      return genderCount;
+      // Transform the genderCount map to the desired format
+      List<Map<String, dynamic>> formattedGenderCount = genderCount.entries.map((entry) => {
+        'label': entry.key,
+        'value': entry.value,
+      }).toList();
+      
+      logger.logInfo('Total gender count: $formattedGenderCount');
+      return formattedGenderCount;
     } catch (e) {
       logger.logError("Error fetching total gender count: $e");
       throw Exception('Error fetching total gender count: $e');
     }
   }
 }
-
-
-
-

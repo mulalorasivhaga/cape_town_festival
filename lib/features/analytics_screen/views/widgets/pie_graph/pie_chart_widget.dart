@@ -17,11 +17,10 @@ class PieChartWidget extends StatelessWidget {
 
     final dataMap = <String, double>{};
     for (var item in data) {
-      final label = item['eventTitle'] as String? ?? item['eventCategory'] as String?;
-      final rsvpCount = item['rsvpCount'] as int?;
-
-      if (label != null && rsvpCount != null) {
-        dataMap[label] = (dataMap[label] ?? 0) + rsvpCount.toDouble();
+      final label = item['label'] as String?;
+      final value = item['value'] as int?;
+      if (label != null && value != null) {
+        dataMap[label] = (dataMap[label] ?? 0) + value.toDouble();
       }
     }
 
