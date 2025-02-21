@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:ct_festival/utils/logger.dart';
 import '../../../../events_screen/controller/event_service.dart';
 import '../../../../events_screen/model/event_model.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:ct_festival/features/home_screen/controller/cloudinary_service.dart';
 
 class EditEventDialog extends StatefulWidget {
   const EditEventDialog({super.key});
@@ -19,11 +21,14 @@ class EditEventDialogState extends State<EditEventDialog> {
   final TextEditingController locationController = TextEditingController();
   final TextEditingController startDateController = TextEditingController();
   final TextEditingController endDateController = TextEditingController();
+  final TextEditingController imageNameController = TextEditingController();
   AppLogger logger = AppLogger();
 
   Event? selectedEvent;
   String? selectedEventId;
   List<Map<String, dynamic>> events = [];
+  PlatformFile? selectedFile;
+  bool isUploading = false;
 
   @override
   void initState() {
@@ -169,47 +174,84 @@ class EditEventDialogState extends State<EditEventDialog> {
                 _buildFormField('Location', locationController),
                 _buildDateTimeField(context, 'Start Date', startDateController),
                 _buildDateTimeField(context, 'End Date', endDateController),
+                _buildImageUploadSection(),
               ],
             ),
           ),
           const SizedBox(height: 20),
           Center(
             child: ElevatedButton(
-              onPressed: () async {
+              onPressed: isUploading ? null : () async {
                 if (selectedEventId != null) {
-                  final updatedEvent = Event(
-                    id: selectedEvent!.id,
-                    title: eventNameController.text,
-                    description: eventDescriptionController.text,
-                    maxParticipants: maxParticipantsController.text,
-                    category: categoryController.text,
-                    location: locationController.text,
-                    startDate: DateTime.parse(startDateController.text),
-                    endDate: DateTime.parse(endDateController.text),
-                    createdAt: selectedEvent!.createdAt,
-                    latitude: 0.0,
-                    longitude: 0.0,
-                    imageUrl: '',
-                  );
+                  try {
+                    setState(() {
+                      isUploading = true;
+                    });
 
-                  final result = await EventService().editEvent(updatedEvent);
-                  logger.logInfo(result);
+                    String imageUrl = selectedEvent!.imageUrl;
+                    if (selectedFile != null) {
+                      try {
+                        String customName = imageNameController.text.trim();
+                        if (customName.isEmpty) {
+                          customName = selectedFile!.name.split('.').first;
+                        }
+                        imageUrl = await CloudinaryService().uploadImage(selectedFile!, customName);
+                      } catch (uploadError) {
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Image upload failed: ${uploadError.toString()}')),
+                        );
+                        return;
+                      }
+                    }
 
-                  if (!context.mounted) return;
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(result)),
-                  );
+                    final updatedEvent = Event(
+                      id: selectedEvent!.id,
+                      title: eventNameController.text,
+                      description: eventDescriptionController.text,
+                      maxParticipants: maxParticipantsController.text,
+                      category: categoryController.text,
+                      location: locationController.text,
+                      startDate: DateTime.parse(startDateController.text),
+                      endDate: DateTime.parse(endDateController.text),
+                      createdAt: selectedEvent!.createdAt,
+                      latitude: selectedEvent!.latitude,
+                      longitude: selectedEvent!.longitude,
+                      imageUrl: imageUrl,
+                    );
 
-                  Navigator.of(context).pop();
+                    final result = await EventService().editEvent(updatedEvent);
+                    logger.logInfo(result);
+
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(result)),
+                    );
+
+                    Navigator.of(context).pop();
+                  } catch (e) {
+                    logger.logError('Error updating event: $e');
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Error updating event: ${e.toString()}'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  } finally {
+                    setState(() {
+                      isUploading = false;
+                    });
+                  }
                 }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFF2AF29),
                 padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
               ),
-              child: const Text(
-                'Update Event',
-                style: TextStyle(
+              child: Text(
+                isUploading ? 'Updating...' : 'Update Event',
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -326,6 +368,81 @@ class EditEventDialogState extends State<EditEventDialog> {
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(vertical: 8),
         ),
+      ),
+    );
+  }
+
+  Widget _buildImageUploadSection() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: const BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: Colors.black, width: 1),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Event Image',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  height: 40,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Text(
+                    selectedFile?.name ?? 'No new image selected',
+                    style: const TextStyle(color: Colors.black),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              ElevatedButton(
+                onPressed: () async {
+                  FilePickerResult? result = await FilePicker.platform.pickFiles(
+                    type: FileType.image,
+                  );
+
+                  if (result != null) {
+                    setState(() {
+                      selectedFile = result.files.single;
+                      imageNameController.text = result.files.single.name.split('.').first;
+                    });
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFF2AF29),
+                ),
+                child: const Text(
+                  'Choose Image',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          TextField(
+            controller: imageNameController,
+            decoration: const InputDecoration(
+              labelText: 'Image Name',
+              hintText: 'Enter a name for the image',
+              border: OutlineInputBorder(),
+            ),
+          ),
+        ],
       ),
     );
   }
