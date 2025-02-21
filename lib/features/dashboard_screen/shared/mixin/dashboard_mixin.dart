@@ -1,3 +1,4 @@
+import 'package:ct_festival/features/analytics_screen/views/analytics_view.dart';
 import 'package:ct_festival/features/auth_screens/view/login_view.dart';
 import 'package:ct_festival/features/dashboard_screen/admin/view/dialogs/create_event_dialog.dart';
 import 'package:ct_festival/features/dashboard_screen/admin/view/dialogs/edit_event_dialog.dart';
@@ -5,10 +6,10 @@ import 'package:ct_festival/features/dashboard_screen/shared/widgets/profile_dia
 import 'package:ct_festival/features/dashboard_screen/user/controller/user_profile_service.dart';
 import 'package:ct_festival/features/dashboard_screen/user/view/dialogs/make_rsvp_dialog.dart';
 import 'package:ct_festival/features/dashboard_screen/user/view/dialogs/view_user_rsvp.dart';
+import 'package:ct_festival/features/dashboard_screen/user/view/dialogs/edit_rsvp_dialog.dart';
+import 'package:ct_festival/features/dashboard_screen/user/view/dialogs/rate_event_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:ct_festival/utils/logger.dart';
-import 'package:ct_festival/features/analytics_screen/views/analytics_view.dart';
-import 'package:ct_festival/features/dashboard_screen/user/view/dialogs/edit_rsvp_dialog.dart';
 
 mixin DashboardMixin {
   final AppLogger logger = AppLogger();
@@ -74,6 +75,7 @@ mixin DashboardMixin {
       }
     }
   }
+}
 
   /// Function to show the create event dialog
   void showCreateEventDialog(BuildContext context) {
@@ -119,17 +121,21 @@ mixin DashboardMixin {
       builder: (BuildContext context) => const EditRsvpDialog(),
     );
   }
-
-  /// Function to navigate to Analytics View
+  /// Function to show the analytics view
   void showAnalyticsView(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => const AnalyticsView(),
-      ),
+      MaterialPageRoute(builder: (context) => const AnalyticsView()),
     );
   }
-
+  /// Function to show the rate event dialog
+  void showRateEventDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) => const RateEventDialog(),
+    );
+  }
   /// Build the card shared_widget
   Widget buildCard({
     required String title,
@@ -166,4 +172,3 @@ mixin DashboardMixin {
       ),
     );
   }
-}

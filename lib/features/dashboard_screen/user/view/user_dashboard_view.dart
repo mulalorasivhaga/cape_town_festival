@@ -45,6 +45,11 @@ class UserDashboard extends StatelessWidget with DashboardMixin {
                 onTap: () => showEditRsvpDialog(context),
                 color: const Color(0xFFAD343E),
               ),
+              buildCard(
+                title: 'Rate Event',
+                onTap: () => showRateEventDialog(context),
+                color: const Color(0xFFAD343E),
+              ),
             ],
           ),
         ),

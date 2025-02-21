@@ -70,6 +70,7 @@ class RatingService {
         'comment': comment,
         'createdAt': DateTime.now().toIso8601String(),
       });
+      logger.logInfo('Rating created successfully');
     } catch (e) {
       logger.logError('Error creating rating: $e');
       rethrow;
