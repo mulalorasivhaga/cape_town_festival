@@ -11,19 +11,31 @@ class RsvpService {
 
   /// Create RSVP
   Future<void> createRsvp(String userId, String eventId, String status) async {
+    // First create the document to get its ID
+    final docRef = FirebaseFirestore.instance.collection('rsvp').doc();
+
     final rsvp = Rsvp(
+      id: docRef.id,  // Use the auto-generated ID
       userId: userId,
       eventId: eventId,
       status: status,
+      createdAt: DateTime.now(),
     );
-    await FirebaseFirestore.instance.collection('rsvp').add(rsvp.toMap());
+
+    await docRef.set(rsvp.toMap());
   }
 
+  /// Update RSVP
+  Future<void> editRsvp(String rsvpId, String status) async {
+    await FirebaseFirestore.instance.collection('rsvp').doc(rsvpId).update({'status': status});
+  }
+  /// Fetch all RSVPs
   Future<List<Rsvp>> getAllRsvps() async {
     final querySnapshot = await FirebaseFirestore.instance.collection('rsvp').get();
     return querySnapshot.docs.map((doc) => Rsvp.fromMap(doc.data(), doc.id)).toList();
   }
 
+  /// Fetch RSVPs by user ID
   Future<List<Rsvp>> getRsvpsByUserId(String userId) async {
     final querySnapshot = await FirebaseFirestore.instance
         .collection('rsvp')

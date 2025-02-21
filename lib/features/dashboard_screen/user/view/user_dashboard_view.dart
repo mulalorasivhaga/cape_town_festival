@@ -40,6 +40,11 @@ class UserDashboard extends StatelessWidget with DashboardMixin {
                 onTap: () => showViewRsvpDialog(context),
                 color: const Color(0xFFAD343E),
               ),
+              buildCard(
+                title: 'Edit RSVP',
+                onTap: () => showEditRsvpDialog(context),
+                color: const Color(0xFFAD343E),
+              ),
             ],
           ),
         ),

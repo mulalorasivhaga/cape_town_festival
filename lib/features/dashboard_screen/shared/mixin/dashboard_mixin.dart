@@ -7,6 +7,8 @@ import 'package:ct_festival/features/dashboard_screen/user/view/dialogs/make_rsv
 import 'package:ct_festival/features/dashboard_screen/user/view/dialogs/view_user_rsvp.dart';
 import 'package:flutter/material.dart';
 import 'package:ct_festival/utils/logger.dart';
+import 'package:ct_festival/features/analytics_screen/views/analytics_view.dart';
+import 'package:ct_festival/features/dashboard_screen/user/view/dialogs/edit_rsvp_dialog.dart';
 
 mixin DashboardMixin {
   final AppLogger logger = AppLogger();
@@ -72,7 +74,6 @@ mixin DashboardMixin {
       }
     }
   }
-}
 
   /// Function to show the create event dialog
   void showCreateEventDialog(BuildContext context) {
@@ -107,6 +108,25 @@ mixin DashboardMixin {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) => const ViewRsvpDialog(),
+    );
+  }
+
+  /// Function to show Edit RSVP Dialog
+  void showEditRsvpDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) => const EditRsvpDialog(),
+    );
+  }
+
+  /// Function to navigate to Analytics View
+  void showAnalyticsView(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const AnalyticsView(),
+      ),
     );
   }
 
@@ -146,3 +166,4 @@ mixin DashboardMixin {
       ),
     );
   }
+}

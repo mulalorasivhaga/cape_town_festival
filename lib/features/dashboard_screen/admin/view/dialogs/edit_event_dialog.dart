@@ -81,32 +81,29 @@ class EditEventDialogState extends State<EditEventDialog> {
 
   /// Build the header
   Widget _buildHeader(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: const BoxDecoration(
-          border: Border(
-            bottom: BorderSide(color: Color(0xFFF2AF29), width: 1),
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: const BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: Color(0xFFF2AF29), width: 1),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Text(
+            'Edit Event',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 36,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Edit Event',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 36,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            IconButton(
-              icon: const Icon(Icons.close, color: Color(0xFF000000)),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-          ],
-        ),
+          IconButton(
+            icon: const Icon(Icons.close, color: Color(0xFF000000)),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ],
       ),
     );
   }
@@ -114,110 +111,109 @@ class EditEventDialogState extends State<EditEventDialog> {
   /// Build the event form
   Widget _buildEventForm(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          DropdownButton<Map<String, dynamic>>(
-            value: (selectedEventId != null && events.any((event) => event['id'] == selectedEventId))
-                ? events.firstWhere((event) => event['id'] == selectedEventId)
-                : null,
-            hint: const Text('Select Event', style: TextStyle(color: Colors.white)),
-            items: events.map((eventDoc) {
-              return DropdownMenuItem<Map<String, dynamic>>(
-                value: eventDoc,
-                child: Text(eventDoc['data']['title']),
-              );
-            }).toList(),
-            onChanged: _onEventSelected,
-          ),
-
-
-          _buildTextField(
-            'Event Title',
-            eventNameController,
-                (value) {},
-                (value) => value?.isEmpty ?? true ? 'Please enter Event Title' : null,
-          ),
-          _buildTextField(
-            'Event Description',
-            eventDescriptionController,
-                (value) {},
-                (value) => value?.isEmpty ?? true ? 'Please enter Event Description' : null,
-          ),
-          _buildTextField(
-            'Max Participants',
-            maxParticipantsController,
-                (value) {},
-                (value) => value?.isEmpty ?? true ? 'Please enter Max Participants' : null,
-            keyboardType: TextInputType.number,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          ),
-          _buildTextField(
-            'Category',
-            categoryController,
-                (value) {},
-                (value) => value?.isEmpty ?? true ? 'Please enter Category' : null,
-          ),
-          _buildTextField(
-            'Location',
-            locationController,
-                (value) {},
-                (value) => value?.isEmpty ?? true ? 'Please enter Location' : null,
-          ),
-          Row(
-            children: [
-              Expanded(
-                child: _buildDateTimeField(
-                  context,
-                  'Start Date',
-                  startDateController,
-                      (value) {},
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _buildDateTimeField(
-                  context,
-                  'End Date',
-                  endDateController,
-                      (value) {},
-                ),
-              ),
-            ],
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(5),
+              border: Border.all(color: Colors.black, width: 1),
+            ),
+            child: DropdownButton<String>(
+              isExpanded: true,
+              value: selectedEventId,
+              hint: const Text('Select Event'),
+              items: events.map((eventDoc) {
+                return DropdownMenuItem<String>(
+                  value: eventDoc['id'] as String,
+                  child: Text(eventDoc['data']['title'] as String),
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
+                if (newValue != null) {
+                  final selectedEventDoc = events.firstWhere(
+                    (event) => event['id'] == newValue,
+                  );
+                  _onEventSelected(selectedEventDoc);
+                }
+              },
+            ),
           ),
           const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () async {
-              if (selectedEventId != null) {
-                final updatedEvent = Event(
-                  id: selectedEvent!.id,
-                  title: eventNameController.text,
-                  description: eventDescriptionController.text,
-                  maxParticipants: maxParticipantsController.text,
-                  category: categoryController.text,
-                  location: locationController.text,
-                  startDate: DateTime.parse(startDateController.text),
-                  endDate: DateTime.parse(endDateController.text),
-                  createdAt: selectedEvent!.createdAt,
-                );
-
-                final result = await EventService().editEvent(updatedEvent);
-                logger.logInfo(result);
-
-                if (!context.mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(result)),
-                );
-
-                Navigator.of(context).pop();
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFF2AF29),
+          const Text(
+            'Event Information',
+            style: TextStyle(
+              color: Color(0xFF000000),
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
             ),
-            child: const Text('Confirm', style: TextStyle(color: Colors.white)),
-          )
+          ),
+          const SizedBox(height: 10),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(5),
+              border: Border.all(color: Colors.black, width: 1),
+            ),
+            child: Column(
+              children: [
+                _buildFormField('Event Title', eventNameController),
+                _buildFormField('Event Description', eventDescriptionController),
+                _buildFormField('Max Participants', maxParticipantsController,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly]),
+                _buildFormField('Category', categoryController),
+                _buildFormField('Location', locationController),
+                _buildDateTimeField(context, 'Start Date', startDateController),
+                _buildDateTimeField(context, 'End Date', endDateController),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          Center(
+            child: ElevatedButton(
+              onPressed: () async {
+                if (selectedEventId != null) {
+                  final updatedEvent = Event(
+                    id: selectedEvent!.id,
+                    title: eventNameController.text,
+                    description: eventDescriptionController.text,
+                    maxParticipants: maxParticipantsController.text,
+                    category: categoryController.text,
+                    location: locationController.text,
+                    startDate: DateTime.parse(startDateController.text),
+                    endDate: DateTime.parse(endDateController.text),
+                    createdAt: selectedEvent!.createdAt,
+                  );
+
+                  final result = await EventService().editEvent(updatedEvent);
+                  logger.logInfo(result);
+
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(result)),
+                  );
+
+                  Navigator.of(context).pop();
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFF2AF29),
+                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+              ),
+              child: const Text(
+                'Update Event',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -228,10 +224,14 @@ class EditEventDialogState extends State<EditEventDialog> {
       BuildContext context,
       String label,
       TextEditingController controller,
-      Function(DateTime) onChanged,
       ) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      decoration: const BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: Colors.black, width: 1),
+        ),
+      ),
       child: TextFormField(
         controller: controller,
         readOnly: true,
@@ -286,56 +286,42 @@ class EditEventDialogState extends State<EditEventDialog> {
 
               if (!context.mounted) return;
               controller.text = finalDateTime.toString();
-              onChanged(finalDateTime);
             }
           }
         },
         decoration: InputDecoration(
           labelText: label,
           labelStyle: const TextStyle(color: Colors.black),
-          filled: true,
-          fillColor: Colors.white,
-          border: const OutlineInputBorder(
-            borderSide: BorderSide(color: Color(0xFF363636), width: 2),
-            borderRadius: BorderRadius.all(Radius.circular(20)),
-          ),
-          focusedBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: Color(0xFFF2AF29), width: 2),
-          ),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(vertical: 8),
         ),
       ),
     );
   }
 
   /// Build the text field
-  Widget _buildTextField(
+  Widget _buildFormField(
       String label,
-      TextEditingController controller,
-      Function(String) onChanged,
-      String? Function(String?)? validator, {
+      TextEditingController controller, {
         TextInputType keyboardType = TextInputType.text,
         List<TextInputFormatter> inputFormatters = const [],
       }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      decoration: const BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: Colors.black, width: 1),
+        ),
+      ),
       child: TextFormField(
         controller: controller,
-        onChanged: onChanged,
-        validator: validator ?? (value) => value?.isEmpty ?? true ? 'Please enter $label' : null,
         keyboardType: keyboardType,
         inputFormatters: inputFormatters,
         decoration: InputDecoration(
           labelText: label,
           labelStyle: const TextStyle(color: Colors.black),
-          filled: true,
-          fillColor: Colors.white,
-          border: const OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.black, width: 2),
-            borderRadius: BorderRadius.all(Radius.circular(20)),
-          ),
-          focusedBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.black, width: 2),
-          ),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(vertical: 8),
         ),
       ),
     );

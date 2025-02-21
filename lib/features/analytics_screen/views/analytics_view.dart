@@ -18,6 +18,17 @@ class AnalyticsView extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Color(0xFF474747),
+      appBar: AppBar(
+        backgroundColor: Color(0xFF474747),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Color(0xFFAD343E)),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text(
+          '',
+          style: TextStyle(color: Colors.transparent),
+        ),
+      ),
       body: FutureBuilder<List<dynamic>>(
         future: Future.wait([
           analyticsService.getRsvpData(),
@@ -116,7 +127,7 @@ class AnalyticsView extends StatelessWidget {
                                 data: rsvpData.isNotEmpty 
                                     ? rsvpData 
                                     : [{'label': 'No Data', 'value': 1}],
-                                title: 'RSVP Distribution (Per Event)',
+                                title: 'RSVP Distribution per Event',
                               ),
                             ),
                           ),
@@ -127,7 +138,7 @@ class AnalyticsView extends StatelessWidget {
                                 data: categoryData.isNotEmpty 
                                     ? categoryData 
                                     : [{'label': 'No Data', 'value': 1}],
-                                title: 'RSVP Distribution (Per Category)',
+                                title: 'RSVP Distribution per Category',
                               ),
                             ),
                           ),

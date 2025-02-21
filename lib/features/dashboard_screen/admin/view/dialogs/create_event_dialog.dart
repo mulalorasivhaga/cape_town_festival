@@ -46,138 +46,152 @@ class CreateEventDialogState extends State<CreateEventDialog> {
   }
 
   Widget _buildHeader(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: const BoxDecoration(
-          border: Border(
-            bottom: BorderSide(color: Color(0xFFF2AF29), width: 1),
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: const BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: Color(0xFFF2AF29), width: 1),
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Text(
+            'Create Event',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 36,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Create Event',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 36,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            IconButton(
-              icon: const Icon(Icons.close, color: Color(0xFF000000)),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-          ],
-        ),
+          IconButton(
+            icon: const Icon(Icons.close, color: Color(0xFF000000)),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildEventForm(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildTextField(
-            'Event Title',
-            eventNameController,
-                (value) {},
-                (value) => value?.isEmpty ?? true ? 'Please enter Event Title' : null,
+          const Text(
+            'Event Information',
+            style: TextStyle(
+              color: Color(0xFF000000),
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-          _buildTextField(
-            'Event Description',
-            eventDescriptionController,
-                (value) {},
-                (value) => value?.isEmpty ?? true ? 'Please enter Event Description' : null,
-          ),
-          _buildTextField(
-            'Max Participants',
-            maxParticipantsController,
-                (value) {},
-                (value) => value?.isEmpty ?? true ? 'Please enter Max Participants' : null,
-            keyboardType: TextInputType.number,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          ),
-          _buildTextField(
-            'Category',
-            categoryController,
-                (value) {},
-                (value) => value?.isEmpty ?? true ? 'Please enter Category' : null,
-          ),
-          _buildTextField(
-            'Location',
-            locationController,
-                (value) {},
-                (value) => value?.isEmpty ?? true ? 'Please enter Location' : null,
-          ),
-          Row(
-            children: [
-              Expanded(
-                child: _buildDateTimeField(
-                  context,
-                  'Start Date',
-                  startDateController,
-                      (value) {},
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _buildDateTimeField(
-                  context,
-                  'End Date',
-                  endDateController,
-                      (value) {},
-                ),
-              ),
-            ],
+          const SizedBox(height: 10),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(5),
+              border: Border.all(color: Colors.black, width: 1),
+            ),
+            child: Column(
+              children: [
+                _buildFormField('Event Title', eventNameController),
+                _buildFormField('Event Description', eventDescriptionController),
+                _buildFormField('Max Participants', maxParticipantsController,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly]),
+                _buildFormField('Category', categoryController),
+                _buildFormField('Location', locationController),
+                _buildDateTimeField(context, 'Start Date', startDateController),
+                _buildDateTimeField(context, 'End Date', endDateController),
+              ],
+            ),
           ),
           const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () async {
-              final event = Event(
-                id: '',
-                title: eventNameController.text,
-                description: eventDescriptionController.text,
-                maxParticipants: maxParticipantsController.text,
-                category: categoryController.text,
-                location: locationController.text,
-                startDate: DateTime.parse(startDateController.text),
-                endDate: DateTime.parse(endDateController.text),
-                createdAt: DateTime.now(),
-              );
+          Center(
+            child: ElevatedButton(
+              onPressed: () async {
+                final event = Event(
+                  id: '',
+                  title: eventNameController.text,
+                  description: eventDescriptionController.text,
+                  maxParticipants: maxParticipantsController.text,
+                  category: categoryController.text,
+                  location: locationController.text,
+                  startDate: DateTime.parse(startDateController.text),
+                  endDate: DateTime.parse(endDateController.text),
+                  createdAt: DateTime.now(),
+                );
 
-              final result = await EventService().createEvent(event);
-              logger.logInfo(result);
+                final result = await EventService().createEvent(event);
+                logger.logInfo(result);
 
-              if (!context.mounted) return;
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(result)),
-              );
+                if (!context.mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(result)),
+                );
 
-              Navigator.of(context).pop();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFF2AF29),
+                Navigator.of(context).pop();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFF2AF29),
+                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+              ),
+              child: const Text(
+                'Create Event',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
-            child: const Text('Create Event', style: TextStyle(color: Colors.white)),
-          )
+          ),
         ],
       ),
     );
   }
 
+  Widget _buildFormField(
+    String label,
+    TextEditingController controller, {
+    TextInputType keyboardType = TextInputType.text,
+    List<TextInputFormatter> inputFormatters = const [],
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      decoration: const BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: Colors.black, width: 1),
+        ),
+      ),
+      child: TextFormField(
+        controller: controller,
+        keyboardType: keyboardType,
+        inputFormatters: inputFormatters,
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: const TextStyle(color: Colors.black),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(vertical: 8),
+        ),
+      ),
+    );
+  }
+
   Widget _buildDateTimeField(
-      BuildContext context,
-      String label,
-      TextEditingController controller,
-      Function(DateTime) onChanged,
-      ) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
+    BuildContext context,
+    String label,
+    TextEditingController controller,
+  ) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      decoration: const BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: Colors.black, width: 1),
+        ),
+      ),
       child: TextFormField(
         controller: controller,
         readOnly: true,
@@ -232,55 +246,14 @@ class CreateEventDialogState extends State<CreateEventDialog> {
 
               if (!context.mounted) return;
               controller.text = finalDateTime.toString();
-              onChanged(finalDateTime);
             }
           }
         },
         decoration: InputDecoration(
           labelText: label,
           labelStyle: const TextStyle(color: Colors.black),
-          filled: true,
-          fillColor: Colors.white,
-          border: const OutlineInputBorder(
-            borderSide: BorderSide(color: Color(0xFF363636), width: 2),
-            borderRadius: BorderRadius.all(Radius.circular(20)),
-          ),
-          focusedBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: Color(0xFFF2AF29), width: 2),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTextField(
-      String label,
-      TextEditingController controller,
-      Function(String) onChanged,
-      String? Function(String?)? validator, {
-        TextInputType keyboardType = TextInputType.text,
-        List<TextInputFormatter> inputFormatters = const [],
-      }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10),
-      child: TextFormField(
-        controller: controller,
-        onChanged: onChanged,
-        validator: validator ?? (value) => value?.isEmpty ?? true ? 'Please enter $label' : null,
-        keyboardType: keyboardType,
-        inputFormatters: inputFormatters,
-        decoration: InputDecoration(
-          labelText: label,
-          labelStyle: const TextStyle(color: Colors.black),
-          filled: true,
-          fillColor: Colors.white,
-          border: const OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.black, width: 2),
-            borderRadius: BorderRadius.all(Radius.circular(20)),
-          ),
-          focusedBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.black, width: 2),
-          ),
+          border: InputBorder.none,
+          contentPadding: const EdgeInsets.symmetric(vertical: 8),
         ),
       ),
     );
