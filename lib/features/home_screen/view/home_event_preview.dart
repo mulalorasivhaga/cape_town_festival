@@ -1,19 +1,37 @@
-// lib/dialogs/manifesto_dialog.dart
-
 import 'package:flutter/material.dart';
 import 'package:ct_festival/features/events_screen/model/event_model.dart';
 import 'package:ct_festival/utils/logger.dart';
 import 'package:intl/intl.dart';
+import 'package:web/web.dart' as web;
+import 'dart:ui_web' as ui_web;
+import 'package:ct_festival/config/api_keys.dart';
 
 class HomeEventPreview extends StatelessWidget {
   final Event event;
-  final AppLogger _logger = AppLogger();
+  final bool showMap;
+  final AppLogger logger = AppLogger();
 
   HomeEventPreview({
     super.key,
     required this.event,
+    this.showMap = false,
   }) {
-    _logger.logDebug('Initializing event dialog for ${event.title}');
+    // Register the view factory for this specific event
+    final String viewId = 'google-map-${event.title}';
+    ui_web.platformViewRegistry.registerViewFactory(
+      viewId,
+      (int viewId) {
+        final iframe = web.HTMLIFrameElement()
+          ..style.border = 'none'
+          ..style.height = '100%'
+          ..style.width = '100%'
+          ..src = 'https://www.google.com/maps/embed/v1/place'
+              '?key=${ApiKeys.googleMapsKey}'
+              '&q=${Uri.encodeComponent(event.location)}'
+              '&zoom=15';
+        return iframe;
+      },
+    );
   }
 
   String _formatDateTime(DateTime dateTime) {
@@ -32,6 +50,15 @@ class HomeEventPreview extends StatelessWidget {
             _buildHeader(context),
             const SizedBox(height: 20),
             _buildEventDetails(),
+            if (showMap) ...[
+              const SizedBox(height: 16),
+              SizedBox(
+                height: 300,
+                child: HtmlElementView(
+                  viewType: 'google-map-${event.title}',
+                ),
+              ),
+            ],
           ],
         ),
       ),
@@ -59,13 +86,13 @@ class HomeEventPreview extends StatelessWidget {
               ), // title
               const SizedBox(height: 10),
               Text(
-                'Tickets Available: ${event.maxParticipants}',
+                'Max Capacity: ${event.maxParticipants}',
                 style: const TextStyle(
                   color: Color(0xFFFFFFFF),
                   fontSize: 16,
                 ),
                 textAlign: TextAlign.center,
-              ) // Add ticket availability here // maxParticipants
+              ) 
             ],
           ),
         ),
@@ -79,7 +106,7 @@ class HomeEventPreview extends StatelessWidget {
               size: 30,
             ),
             onPressed: () {
-              _logger.logDebug('Closing event dialog for ${event.title}');
+              //logger.logDebug('Closing event dialog for ${event.title}');
               Navigator.of(context).pop();
             },
           ),

@@ -1,42 +1,39 @@
+import 'package:ct_festival/features/dashboard_screen/shared/mixin/dashboard_mixin.dart';
 import 'package:ct_festival/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ct_festival/providers/auth_provider.dart';
 
 class LogoutNavBar extends ConsumerStatefulWidget implements PreferredSizeWidget {
-  const LogoutNavBar({super.key});
+   LogoutNavBar({super.key});
+  final AppLogger logger = AppLogger();
 
   @override
   LogoutNavBarState createState() => LogoutNavBarState();
 
   @override
-  Size get preferredSize => Size.fromHeight(50);
+  Size get preferredSize => const Size.fromHeight(50);
 }
 
-class LogoutNavBarState extends ConsumerState<LogoutNavBar> {
-  final AppLogger logger = AppLogger();
+class LogoutNavBarState extends ConsumerState<LogoutNavBar> with DashboardMixin {
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: Color(0xFF474747),
-      title: Text(''),
-
+      backgroundColor: const Color(0xFF474747),
+      title: const Text(''),
       actions: [
         Tooltip(
-          message: 'Events',
+          message: 'My Profile',
           child: IconButton(
-            icon: Icon(Icons.event_available, color: Color(0xFFAD343E)),
-            onPressed: () {
-              Navigator.pushNamed(context, '/events');
-              logger.logDebug('Navigating to event screen');
-            },
+            icon: const Icon(Icons.person, color: Color(0xFFAD343E)),
+            onPressed: () => showProfileDialog(context),
           ),
         ),
         Tooltip(
           message: 'Home',
           child: IconButton(
-            icon: Icon(Icons.home, color: Color(0xFFAD343E)),
+            icon: const Icon(Icons.home, color: Color(0xFFAD343E)),
             onPressed: () {
               Navigator.pop(context);
               logger.logDebug('Navigating to home');
@@ -46,7 +43,7 @@ class LogoutNavBarState extends ConsumerState<LogoutNavBar> {
         Tooltip(
           message: 'Logout',
           child: IconButton(
-            icon: Icon(Icons.logout, color: Color(0xFFAD343E)),
+            icon: const Icon(Icons.logout, color: Color(0xFFAD343E)),
             onPressed: () async {
               final navigator = Navigator.of(context);
               final scaffoldMessenger = ScaffoldMessenger.of(context);
@@ -64,7 +61,7 @@ class LogoutNavBarState extends ConsumerState<LogoutNavBar> {
               }
             },
           ),
-        ), //logout button
+        ),
       ],
     );
   }

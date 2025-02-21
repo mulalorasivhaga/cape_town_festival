@@ -137,14 +137,15 @@ class _HomeViewState extends State<HomeView> {
     final bool isMobile = constraints.maxWidth <= 600;
     return Container(
       width: itemWidth,
-      height: 450, // Fixed height for all cards
+      height: 500,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: const Color(0xFFAD343E),
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withValues(),
+            // ignore: deprecated_member_use
+            color: Colors.grey.withOpacity(0.5),
             spreadRadius: 5,
             blurRadius: 7,
             offset: const Offset(0, 3),
@@ -155,19 +156,28 @@ class _HomeViewState extends State<HomeView> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          CircleAvatar(
-            radius: isMobile ? 80 : 100,
-            //backgroundImage: AssetImage(event.imagePath),
-            backgroundColor: Colors.white,
+          Container(
+            width: isMobile ? 200 : 250,
+            height: isMobile ? 200 : 250,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+              image: event.imageUrl.isNotEmpty
+                  ? DecorationImage(
+                      image: NetworkImage(event.imageUrl),
+                      fit: BoxFit.cover,
+                    )
+                  : null,
+            ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Text(
               event.title,
               style: TextStyle(
                 color: Colors.white,
-                fontSize: isMobile ? 16 : 20,
+                fontSize: isMobile ? 14 : 16,
                 fontWeight: FontWeight.bold,
               ),
               textAlign: TextAlign.center,
@@ -179,7 +189,7 @@ class _HomeViewState extends State<HomeView> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Text(
-             'Max Participants: ${event.maxParticipants}' ,
+             'Max Participants: ${event.maxParticipants}',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: isMobile ? 16 : 18,
@@ -227,11 +237,13 @@ class _HomeViewState extends State<HomeView> {
         return Dialog(
           child: ConstrainedBox(
             constraints: BoxConstraints(
-              maxWidth: constraints.maxWidth * 0.8,
-              maxHeight: constraints.maxHeight * 0.8,
+              maxWidth: constraints.maxWidth * 0.9,
+              // Increased width for better map display
+              maxHeight: constraints.maxHeight * 0.9,
             ),
             child: HomeEventPreview(
               event: event,
+              showMap: true,
             ),
           ),
         );

@@ -146,7 +146,7 @@ class EditEventDialogState extends State<EditEventDialog> {
           const Text(
             'Event Information',
             style: TextStyle(
-              color: Color(0xFF000000),
+              color: Colors.white,
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
@@ -187,6 +187,9 @@ class EditEventDialogState extends State<EditEventDialog> {
                     startDate: DateTime.parse(startDateController.text),
                     endDate: DateTime.parse(endDateController.text),
                     createdAt: selectedEvent!.createdAt,
+                    latitude: 0.0,
+                    longitude: 0.0,
+                    imageUrl: '',
                   );
 
                   final result = await EventService().editEvent(updatedEvent);

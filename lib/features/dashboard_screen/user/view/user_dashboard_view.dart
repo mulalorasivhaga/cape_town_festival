@@ -26,11 +26,6 @@ class UserDashboard extends StatelessWidget with DashboardMixin {
             ),
             children: [
               buildCard(
-                title: 'View\nProfile',
-                onTap: () => showProfileDialog(context),
-                color: const Color(0xFFAD343E),
-              ),
-              buildCard(
                 title: 'Make\nRSVP',
                 onTap: () => showRsvpDialog(context),
                 color: const Color(0xFFAD343E),

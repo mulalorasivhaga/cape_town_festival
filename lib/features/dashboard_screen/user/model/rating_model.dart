@@ -1,5 +1,6 @@
 class Rating {
   final String userId;
+  final String eventId;
   final String rsvpId;
   final int rating;
   final String comment;
@@ -7,6 +8,7 @@ class Rating {
 
   Rating({
     required this.userId,
+    required this.eventId,
     required this.rsvpId,
     required this.rating,
     required this.comment,
@@ -16,6 +18,7 @@ class Rating {
   factory Rating.fromMap(Map<String, dynamic> map, String docId) {
     return Rating(
       userId: map['userId'] ?? '',
+      eventId: map['eventId'] ?? '',
       rsvpId: map['rsvpId'] ?? '',
       rating: map['rating'] ?? 0,
       comment: map['comment'] ?? '',
@@ -26,6 +29,7 @@ class Rating {
   Map<String, dynamic> toMap() {
     return {
       'userId': userId,
+      'eventId': eventId,
       'rsvpId': rsvpId,
       'rating': rating,
       'comment': comment,

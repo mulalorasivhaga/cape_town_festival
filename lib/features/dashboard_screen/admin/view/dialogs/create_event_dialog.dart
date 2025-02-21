@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ct_festival/utils/logger.dart';
-
+import 'package:file_picker/file_picker.dart';
+import 'package:ct_festival/features/home_screen/controller/cloudinary_service.dart';
 import '../../../../events_screen/controller/event_service.dart';
 import '../../../../events_screen/model/event_model.dart';
 
@@ -20,6 +21,9 @@ class CreateEventDialogState extends State<CreateEventDialog> {
   final TextEditingController locationController = TextEditingController();
   final TextEditingController startDateController = TextEditingController();
   final TextEditingController endDateController = TextEditingController();
+  final TextEditingController imageNameController = TextEditingController();
+  PlatformFile? selectedFile;
+  bool isUploading = false;
   AppLogger logger = AppLogger();
 
 
@@ -82,7 +86,7 @@ class CreateEventDialogState extends State<CreateEventDialog> {
           const Text(
             'Event Information',
             style: TextStyle(
-              color: Color(0xFF000000),
+              color: Colors.white,
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
@@ -105,47 +109,162 @@ class CreateEventDialogState extends State<CreateEventDialog> {
                 _buildFormField('Location', locationController),
                 _buildDateTimeField(context, 'Start Date', startDateController),
                 _buildDateTimeField(context, 'End Date', endDateController),
+                _buildImageUploadSection(),
               ],
             ),
           ),
           const SizedBox(height: 20),
           Center(
             child: ElevatedButton(
-              onPressed: () async {
-                final event = Event(
-                  id: '',
-                  title: eventNameController.text,
-                  description: eventDescriptionController.text,
-                  maxParticipants: maxParticipantsController.text,
-                  category: categoryController.text,
-                  location: locationController.text,
-                  startDate: DateTime.parse(startDateController.text),
-                  endDate: DateTime.parse(endDateController.text),
-                  createdAt: DateTime.now(),
-                );
+                onPressed: isUploading ? null : () async {
+                  try {
+                    setState(() {
+                      isUploading = true;
+                    });
 
-                final result = await EventService().createEvent(event);
-                logger.logInfo(result);
+                    String imageUrl = '';
+                    if (selectedFile != null) {
+                      try {
+                        String customName = imageNameController.text.trim();
+                        if (customName.isEmpty) {
+                          customName = selectedFile!.name.split('.').first;
+                        }
+                        imageUrl = await CloudinaryService().uploadImage(selectedFile!, customName);
+                      } catch (uploadError) {
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Image upload failed: ${uploadError.toString()}')),
+                        );
+                        return;
+                      }
+                    }
 
-                if (!context.mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(result)),
-                );
+                    final event = Event(
+                      id: '',
+                      title: eventNameController.text,
+                      description: eventDescriptionController.text,
+                      maxParticipants: maxParticipantsController.text,
+                      category: categoryController.text,
+                      location: locationController.text,
+                      startDate: DateTime.parse(startDateController.text),
+                      endDate: DateTime.parse(endDateController.text),
+                      createdAt: DateTime.now(),
+                      latitude: 0.0,
+                      longitude: 0.0,
+                      imageUrl: imageUrl,
+                    );
 
-                Navigator.of(context).pop();
-              },
+                    final result = await EventService().createEvent(event);
+                    logger.logInfo(result);
+
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(result)),
+                    );
+
+                    Navigator.of(context).pop();
+                  } catch (e) {
+                    logger.logError('Error creating event: $e');
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Error creating event: ${e.toString()}'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  } finally {
+                    setState(() {
+                      isUploading = false;
+                    });
+                  }
+                },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFF2AF29),
                 padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
               ),
-              child: const Text(
-                'Create Event',
-                style: TextStyle(
+              child: Text(
+                isUploading ? 'Creating...' : 'Create Event',
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildImageUploadSection() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: const BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: Colors.black, width: 1),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Event Image',
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  height: 40,
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Text(
+                    selectedFile?.name ?? 'No image selected',
+                    style: const TextStyle(color: Colors.black),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              ElevatedButton(
+                onPressed: () async {
+                  FilePickerResult? result = await FilePicker.platform.pickFiles(
+                    type: FileType.image,
+                  );
+
+                  if (result != null) {
+                    setState(() {
+                      selectedFile = result.files.single;
+                      imageNameController.text = result.files.single.name.split('.').first;
+                    });
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFF2AF29),
+                ),
+                child: const Text(
+                  'Choose Image',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          TextField(
+            controller: imageNameController,
+            decoration: const InputDecoration(
+              labelText: 'Image Name',
+              hintText: 'Enter a name for the image',
+              border: OutlineInputBorder(),
             ),
           ),
         ],

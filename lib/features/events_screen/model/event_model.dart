@@ -8,6 +8,9 @@ class Event {
   final DateTime startDate;
   final DateTime endDate;
   final DateTime createdAt;
+  final double latitude;
+  final double longitude;
+  final String imageUrl;
 
   Event({
     required this.id,
@@ -19,6 +22,9 @@ class Event {
     required this.startDate,
     required this.endDate,
     required this.createdAt,
+    required this.latitude,
+    required this.longitude,
+    required this.imageUrl,
   });
 
   // Convert from Map to Event object
@@ -33,6 +39,9 @@ class Event {
       startDate: DateTime.parse(map['startDate'] ?? DateTime.now().toString()),
       endDate: DateTime.parse(map['endDate'] ?? DateTime.now().toString()),
       createdAt: DateTime.parse(map['createdAt'] ?? DateTime.now().toString()),
+      latitude: map['latitude'] ?? 0.0,
+      longitude: map['longitude'] ?? 0.0,
+      imageUrl: map['imageUrl'] ?? '',
     );
   }
 
@@ -48,6 +57,9 @@ class Event {
       'startDate': startDate.toIso8601String(),
       'endDate': endDate.toIso8601String(),
       'createdAt': createdAt.toIso8601String(),
+      'latitude': latitude,
+      'longitude': longitude,
+      'imageUrl': imageUrl,
     };
   }
 
@@ -63,6 +75,9 @@ class Event {
       startDate: DateTime.parse(data['startDate'] ?? DateTime.now().toString()),
       endDate: DateTime.parse(data['endDate'] ?? DateTime.now().toString()),
       createdAt: DateTime.parse(data['createdAt'] ?? DateTime.now().toString()),
+      latitude: data['latitude'] ?? 0.0,
+      longitude: data['longitude'] ?? 0.0,
+      imageUrl: data['imageUrl'] ?? '',
     );
   }
 }

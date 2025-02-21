@@ -8,6 +8,7 @@ import 'package:ct_festival/features/dashboard_screen/user/view/dialogs/make_rsv
 import 'package:ct_festival/features/dashboard_screen/user/view/dialogs/view_user_rsvp.dart';
 import 'package:ct_festival/features/dashboard_screen/user/view/dialogs/edit_rsvp_dialog.dart';
 import 'package:ct_festival/features/dashboard_screen/user/view/dialogs/rate_event_dialog.dart';
+import 'package:ct_festival/features/events_screen/view/events_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:ct_festival/utils/logger.dart';
 
@@ -77,6 +78,9 @@ mixin DashboardMixin {
   }
 }
 
+  /// Function to show the login dialog
+
+
   /// Function to show the create event dialog
   void showCreateEventDialog(BuildContext context) {
     showDialog(
@@ -128,6 +132,14 @@ mixin DashboardMixin {
       MaterialPageRoute(builder: (context) => const AnalyticsView()),
     );
   }
+
+  /// Function to show events view
+void showEventsScreen(BuildContext context) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => const EventsScreen()),
+  );
+}
   /// Function to show the rate event dialog
   void showRateEventDialog(BuildContext context) {
     showDialog(
