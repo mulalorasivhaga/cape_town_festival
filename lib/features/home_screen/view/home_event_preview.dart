@@ -6,18 +6,29 @@ import 'package:web/web.dart' as web;
 import 'dart:ui_web' as ui_web;
 import 'package:ct_festival/config/api_keys.dart';
 
-class HomeEventPreview extends StatelessWidget {
+class HomeEventPreview extends StatefulWidget {
   final Event event;
   final bool showMap;
-  final AppLogger logger = AppLogger();
 
-  HomeEventPreview({
+  const HomeEventPreview({
     super.key,
     required this.event,
     this.showMap = false,
-  }) {
+  });
+
+  @override
+  State<HomeEventPreview> createState() => _HomeEventPreviewState();
+}
+
+class _HomeEventPreviewState extends State<HomeEventPreview> {
+  bool isMapLoaded = false;
+  final AppLogger logger = AppLogger();
+
+  @override
+  void initState() {
+    super.initState();
     // Register the view factory for this specific event
-    final String viewId = 'google-map-${event.title}';
+    final String viewId = 'google-map-${widget.event.title}';
     ui_web.platformViewRegistry.registerViewFactory(
       viewId,
       (int viewId) {
@@ -27,8 +38,18 @@ class HomeEventPreview extends StatelessWidget {
           ..style.width = '100%'
           ..src = 'https://www.google.com/maps/embed/v1/place'
               '?key=${ApiKeys.googleMapsKey}'
-              '&q=${Uri.encodeComponent(event.location)}'
+              '&q=${Uri.encodeComponent(widget.event.location)}'
               '&zoom=15';
+        
+        // Add load event listener
+        iframe.onLoad.listen((_) {
+          if (mounted) {
+            setState(() {
+              isMapLoaded = true;
+            });
+          }
+        });
+        
         return iframe;
       },
     );
@@ -50,14 +71,58 @@ class HomeEventPreview extends StatelessWidget {
             _buildHeader(context),
             const SizedBox(height: 20),
             _buildEventDetails(),
-            if (showMap) ...[
+            if (widget.showMap) ...[
               const SizedBox(height: 16),
-              SizedBox(
-                height: 300,
-                child: HtmlElementView(
-                  viewType: 'google-map-${event.title}',
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Container(
+                  height: 300,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: const Color(0xFFF2AF29),
+                      width: 2,
+                    ),
+                  ),
+                  child: Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: HtmlElementView(
+                          viewType: 'google-map-${widget.event.title}',
+                        ),
+                      ),
+                      if (!isMapLoaded)
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.8),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CircularProgressIndicator(
+                                  color: Color(0xFFAD343E),
+                                ),
+                                SizedBox(height: 16),
+                                Text(
+                                  'Loading Map...',
+                                  style: TextStyle(
+                                    color: Color(0xFFAD343E),
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
               ),
+              const SizedBox(height: 20),
             ],
           ],
         ),
@@ -76,7 +141,7 @@ class HomeEventPreview extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                event.title,
+                widget.event.title,
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 24,
@@ -86,7 +151,7 @@ class HomeEventPreview extends StatelessWidget {
               ), // title
               const SizedBox(height: 10),
               Text(
-                'Max Capacity: ${event.maxParticipants}',
+                'Max Capacity: ${widget.event.maxParticipants}',
                 style: const TextStyle(
                   color: Color(0xFFFFFFFF),
                   fontSize: 16,
@@ -106,7 +171,7 @@ class HomeEventPreview extends StatelessWidget {
               size: 30,
             ),
             onPressed: () {
-              //logger.logDebug('Closing event dialog for ${event.title}');
+              //logger.logDebug('Closing event dialog for ${widget.event.title}');
               Navigator.of(context).pop();
             },
           ),
@@ -129,7 +194,7 @@ class HomeEventPreview extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Text(
-              'Category: ${event.category}',
+              'Category: ${widget.event.category}',
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 16,
@@ -138,7 +203,7 @@ class HomeEventPreview extends StatelessWidget {
             ), // category
             const SizedBox(height: 20),
             Text(
-              event.description,
+              widget.event.description,
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 16,
@@ -147,7 +212,7 @@ class HomeEventPreview extends StatelessWidget {
             ), // description
             const SizedBox(height: 50),
             Text(
-              'Location: ${event.location}',
+              'Location: ${widget.event.location}',
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 16,
@@ -156,7 +221,7 @@ class HomeEventPreview extends StatelessWidget {
             ), // location
             const SizedBox(height: 10),
             Text(
-              'Start Date: ${_formatDateTime(event.startDate)}',
+              'Start Date: ${_formatDateTime(widget.event.startDate)}',
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 16,
@@ -165,7 +230,7 @@ class HomeEventPreview extends StatelessWidget {
             ), // startDate
             const SizedBox(height: 10),
             Text(
-              'End Date: ${_formatDateTime(event.endDate)}',
+              'End Date: ${_formatDateTime(widget.event.endDate)}',
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 16,
