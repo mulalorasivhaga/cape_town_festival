@@ -10,6 +10,7 @@
 import 'package:ct_festival/features/dashboard_screen/shared/mixin/dashboard_mixin.dart';
 import 'package:ct_festival/features/dashboard_screen/shared/widgets/logout_nav.dart';
 import 'package:flutter/material.dart';
+import 'package:ct_festival/features/events_screen/controller/event_service.dart';
 
 class AdminDashboardView extends StatelessWidget with DashboardMixin {
    AdminDashboardView({super.key});
@@ -53,6 +54,57 @@ class AdminDashboardView extends StatelessWidget with DashboardMixin {
                 title: 'Analytics',
                 onTap: () => showAnalyticsView(context),
                 color: Color(0xFFF2AF29),
+              ),
+              buildCard(
+                title: 'RSVPs Analytics',
+                onTap: () => showRsvpAnalyticsView(context),
+                color: Color(0xFFF2AF29),
+              ),
+              buildCard(
+                title: 'Archive Event',
+                onTap: () async {
+                  final eventService = EventService();
+                  final events = await eventService.getAllEvents();
+                  
+                  if (!context.mounted) return;
+                  
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Select Event to Archive'),
+                        content: SizedBox(
+                          width: double.maxFinite,
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: events.length,
+                            itemBuilder: (context, index) {
+                              final event = events[index];
+                              return ListTile(
+                                title: Text(event.title),
+                                onTap: () {
+                                  Navigator.pop(context); // Close the selection dialog
+                                  showArchiveEventDialog(
+                                    context,
+                                    event.id,
+                                    event.title,
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('Cancel'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+                color: const Color(0xFFF2AF29),
               ),
             ],
           ),

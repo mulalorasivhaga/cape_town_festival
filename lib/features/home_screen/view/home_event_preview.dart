@@ -63,68 +63,81 @@ class _HomeEventPreviewState extends State<HomeEventPreview> {
   /// Build the event preview dialog
   @override
   Widget build(BuildContext context) {
+    // Get the screen width
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    // Define padding based on screen size
+    final horizontalPadding = screenWidth > 1200 ? 100.0 : // desktop
+                            screenWidth > 600 ? 50.0 : // tablet
+                            20.0; // mobile
+
     return Scaffold(
       backgroundColor: const Color(0xFFAD343E),
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildHeader(context),
-            const SizedBox(height: 20),
-            _buildEventDetails(),
-            if (widget.showMap) ...[
-              const SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                child: Container(
-                  height: 300,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: const Color(0xFFF2AF29),
-                      width: 2,
-                    ),
-                  ),
-                  child: Stack(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: HtmlElementView(
-                          viewType: 'google-map-${widget.event.title}',
-                        ),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minHeight: MediaQuery.of(context).size.height,
+          ),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+            child: Column(
+              children: [
+                _buildHeader(context),
+                const SizedBox(height: 20),
+                _buildEventDetails(screenWidth),
+                if (widget.showMap) ...[
+                  const SizedBox(height: 16),
+                  Container(
+                    height: screenWidth > 600 ? 300 : 200, // Adjust map height for mobile
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: const Color(0xFFF2AF29),
+                        width: 2,
                       ),
-                      if (!isMapLoaded)
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.8),
-                            borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Stack(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: HtmlElementView(
+                            viewType: 'google-map-${widget.event.title}',
                           ),
-                          child: const Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                CircularProgressIndicator(
-                                  color: Color(0xFFAD343E),
-                                ),
-                                SizedBox(height: 16),
-                                Text(
-                                  'Loading Map...',
-                                  style: TextStyle(
+                        ),
+                        if (!isMapLoaded)
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  CircularProgressIndicator(
                                     color: Color(0xFFAD343E),
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
                                   ),
-                                ),
-                              ],
+                                  SizedBox(height: 16),
+                                  Text(
+                                    'Loading Map...',
+                                    style: TextStyle(
+                                      color: Color(0xFFAD343E),
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ),
-              const SizedBox(height: 20),
-            ],
-          ],
+                  const SizedBox(height: 20),
+                ],
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -132,23 +145,26 @@ class _HomeEventPreviewState extends State<HomeEventPreview> {
 
   /// Build the header section
   Widget _buildHeader(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final titleFontSize = screenWidth > 600 ? 24.0 : 20.0;
+
     return Stack(
       children: [
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.only(top: 16, bottom: 0),
+          padding: const EdgeInsets.only(top: 36, bottom: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
                 widget.event.title,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
-                  fontSize: 24,
+                  fontSize: titleFontSize,
                   fontWeight: FontWeight.bold,
                 ),
                 textAlign: TextAlign.center,
-              ), // title
+              ),
               const SizedBox(height: 10),
               Text(
                 'Max Capacity: ${widget.event.maxParticipants}',
@@ -157,13 +173,13 @@ class _HomeEventPreviewState extends State<HomeEventPreview> {
                   fontSize: 16,
                 ),
                 textAlign: TextAlign.center,
-              ) 
+              )
             ],
           ),
         ),
         Positioned(
-          top: 8,
-          right: 8,
+          top: 16,
+          right: 16,
           child: IconButton(
             icon: const Icon(
               Icons.close,
@@ -181,63 +197,69 @@ class _HomeEventPreviewState extends State<HomeEventPreview> {
   }
 
   /// Build the event details
-  Widget _buildEventDetails() {
+  Widget _buildEventDetails(double screenWidth) {
+    final textFontSize = screenWidth > 600 ? 16.0 : 14.0;
+    final verticalSpacing = screenWidth > 600 ? 15.0 : 10.0; // Reduced spacing
+
     return Center(
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 50),
+        padding: EdgeInsets.symmetric(
+          horizontal: screenWidth > 600 ? 50.0 : 20.0,
+          vertical: verticalSpacing,
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Divider(
               color: Color(0xFFF2AF29),
               thickness: 2,
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: verticalSpacing),
             Text(
               'Category: ${widget.event.category}',
-              style: const TextStyle(
+              style: TextStyle(
                 color: Colors.white,
-                fontSize: 16,
+                fontSize: textFontSize,
               ),
-              textAlign: TextAlign.left,
-            ), // category
-            const SizedBox(height: 20),
+            ),
+            SizedBox(height: verticalSpacing),
             Text(
               widget.event.description,
-              style: const TextStyle(
+              style: TextStyle(
                 color: Colors.white,
-                fontSize: 16,
+                fontSize: textFontSize,
               ),
               textAlign: TextAlign.left,
-            ), // description
-            const SizedBox(height: 50),
+            ),
+            SizedBox(height: verticalSpacing * 2),
             Text(
               'Location: ${widget.event.location}',
-              style: const TextStyle(
+              style: TextStyle(
                 color: Colors.white,
-                fontSize: 16,
+                fontSize: textFontSize,
               ),
               textAlign: TextAlign.left,
-            ), // location
-            const SizedBox(height: 10),
+            ),
+            SizedBox(height: verticalSpacing / 2),
             Text(
               'Start Date: ${_formatDateTime(widget.event.startDate)}',
-              style: const TextStyle(
+              style: TextStyle(
                 color: Colors.white,
-                fontSize: 16,
+                fontSize: textFontSize,
               ),
               textAlign: TextAlign.left,
-            ), // startDate
-            const SizedBox(height: 10),
+            ),
+            SizedBox(height: verticalSpacing / 2),
             Text(
               'End Date: ${_formatDateTime(widget.event.endDate)}',
-              style: const TextStyle(
+              style: TextStyle(
                 color: Colors.white,
-                fontSize: 16,
+                fontSize: textFontSize,
               ),
               textAlign: TextAlign.left,
-            ),// endDate
-            const SizedBox(height: 10),
+            ),
+            SizedBox(height: verticalSpacing / 2),
           ],
         ),
       ),

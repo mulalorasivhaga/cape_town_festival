@@ -37,3 +37,6 @@ class CtApp extends StatelessWidget {
     );
   }
 }
+
+// deploy on firebase after changes
+//flutter build web && firebase deploy

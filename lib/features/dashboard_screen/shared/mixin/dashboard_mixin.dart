@@ -1,5 +1,6 @@
-import 'package:ct_festival/features/analytics_screen/views/analytics_view.dart';
+import 'package:ct_festival/features/analytics_screen/views/rsvp_analytics_view.dart';
 import 'package:ct_festival/features/auth_screens/view/login_view.dart';
+import 'package:ct_festival/features/dashboard_screen/admin/view/dialogs/archive_event_dialog.dart';
 import 'package:ct_festival/features/dashboard_screen/admin/view/dialogs/create_event_dialog.dart';
 import 'package:ct_festival/features/dashboard_screen/admin/view/dialogs/edit_event_dialog.dart';
 import 'package:ct_festival/features/dashboard_screen/shared/widgets/profile_dialog.dart';
@@ -11,6 +12,8 @@ import 'package:ct_festival/features/dashboard_screen/user/view/dialogs/rate_eve
 import 'package:ct_festival/features/events_screen/view/events_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:ct_festival/utils/logger.dart';
+
+import '../../../analytics_screen/views/analytics_view.dart';
 
 mixin DashboardMixin {
   final AppLogger logger = AppLogger();
@@ -76,7 +79,6 @@ mixin DashboardMixin {
       }
     }
   }
-}
 
   /// Function to show the login dialog
 
@@ -129,9 +131,17 @@ mixin DashboardMixin {
   void showAnalyticsView(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const AnalyticsView()),
+      MaterialPageRoute(builder: (context) =>  AnalyticsView()),
     );
   }
+
+  void showRsvpAnalyticsView(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) =>  RsvpAnalyticsView()),
+    );
+  }
+
 
   /// Function to show events view
 void showEventsScreen(BuildContext context) {
@@ -146,6 +156,18 @@ void showEventsScreen(BuildContext context) {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) => const RateEventDialog(),
+    );
+  }
+
+  /// Function to show the archive event dialog
+  void showArchiveEventDialog(BuildContext context, String eventId, String eventTitle) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) => ArchiveEventDialog(
+        eventId: eventId,
+        eventTitle: eventTitle,
+      ),
     );
   }
   /// Build the card shared_widget
@@ -184,3 +206,4 @@ void showEventsScreen(BuildContext context) {
       ),
     );
   }
+}
