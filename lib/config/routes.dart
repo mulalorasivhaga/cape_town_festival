@@ -13,7 +13,7 @@ class Routes {
   // Define route names as constants
   static const String initial = '/MainNav';
   static const String home = '/home';
-  static const String login = '/_handleRegistration';
+  static const String login = '/loginView';
   static const String register = '/registerView';
   static const String dashboard = '/dashboard';
   static const String events = '/events';

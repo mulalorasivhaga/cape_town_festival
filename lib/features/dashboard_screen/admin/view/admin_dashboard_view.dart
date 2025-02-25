@@ -29,8 +29,8 @@ class AdminDashboardView extends StatelessWidget with DashboardMixin {
             ),
             children: [
               buildCard(
-                title: 'View\nCurrent\nEvents',
-                onTap: () => showEventsScreen(context),
+                title: 'Analytics\nCentre',
+                onTap: () => showAnalyticsCentre(context),
                 color: const Color(0xFFF2AF29),
               ),
               buildCard(
@@ -44,8 +44,8 @@ class AdminDashboardView extends StatelessWidget with DashboardMixin {
                 color: const Color(0xFFF2AF29),
               ),
               buildCard(
-                title: 'Analytics\nCentre',
-                onTap: () => showAnalyticsCentre(context),
+                title: 'View\nCurrent\nEvents',
+                onTap: () => showEventsScreen(context),
                 color: const Color(0xFFF2AF29),
               ),
               buildCard(
