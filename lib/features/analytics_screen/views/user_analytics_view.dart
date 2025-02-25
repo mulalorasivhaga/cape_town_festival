@@ -1,3 +1,4 @@
+import 'package:ct_festival/features/analytics_screen/views/widgets/table/user_table.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ct_festival/features/analytics_screen/views/widgets/pie_graph/pie_chart_widget.dart';
@@ -14,14 +15,14 @@ class UserAnalyticsView extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: Color(0xFF474747),
+      backgroundColor: const Color(0xFF474747),
       appBar: AppBar(
-        backgroundColor: Color(0xFF474747),
+        backgroundColor: const Color(0xFF474747),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Color(0xFFAD343E)),
+          icon: const Icon(Icons.arrow_back, color: Color(0xFFAD343E)),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(
+        title: const Text(
           '',
           style: TextStyle(color: Colors.transparent),
         ),
@@ -31,6 +32,7 @@ class UserAnalyticsView extends StatelessWidget {
           analyticsService.getRsvpData(),
           analyticsService.getRsvpCategoryData(),
           analyticsService.getTotalGenderCount(),
+          analyticsService.getAllUsers(),
         ]),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -41,6 +43,8 @@ class UserAnalyticsView extends StatelessWidget {
             return const Center(child: Text('No data available'));
           } else {
             final genderData = (snapshot.data![2] as List<dynamic>).cast<Map<String, dynamic>>();
+            final userData = (snapshot.data![3] as List<dynamic>).cast<Map<String, dynamic>>();
+
             return SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
@@ -52,6 +56,7 @@ class UserAnalyticsView extends StatelessWidget {
                       height: screenHeight * 0.4,
                       child: Row(
                         children: [
+                          /// Gender Distribution Pie Chart
                           Expanded(
                             flex: 3, // 30% of the width
                             child: PieChartWidget(
@@ -89,6 +94,9 @@ class UserAnalyticsView extends StatelessWidget {
                         ],
                       ),
                     ),
+                    const SizedBox(height: 16),
+                    /// Table of all users
+                    UserTable(data: userData), // Pass userData to LeaderboardTable
                   ],
                 ),
               ),

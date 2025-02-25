@@ -49,6 +49,30 @@ class AnalyticsService {
     }
   }
 
+  /// Get all users
+  Future<List<Map<String, dynamic>>> getAllUsers() async {
+    try {
+      final querySnapshot = await _firestore.collection('users').get();
+      List<Map<String, dynamic>> userData = [];
+
+      for (var doc in querySnapshot.docs) {
+        userData.add({
+          'id': doc.id,
+          'firstName': doc['firstName'] ?? 'N/A',
+          'lastName': doc['lastName'] ?? 'N/A',
+          'email': doc['email'] ?? 'N/A',
+          'gender': doc['gender'] ?? 'N/A',
+          'age': doc['age'] ?? 'N/A',
+        });
+      }
+
+      return userData;
+    } catch (e) {
+      logger.logError("Error fetching users: $e");
+      throw Exception('Error fetching users: $e');
+    }
+  }
+
   ///Get RSVPs for each specific event
   Future<int> getRsvpForEvent(String eventId) async {
     try {
