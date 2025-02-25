@@ -1,15 +1,12 @@
-// analytics_view.dart
-import 'package:ct_festival/features/analytics_screen/views/widgets/counter/counter_card.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ct_festival/features/analytics_screen/views/widgets/pie_graph/pie_chart_widget.dart';
-import 'package:ct_festival/features/analytics_screen/views/widgets/table/leaderboard_table.dart';
 import 'package:ct_festival/features/analytics_screen/controller/analytics_services.dart';
 import 'package:ct_festival/features/analytics_screen/views/widgets/bar_graph/bar_graph_widget.dart';
 import 'dart:math' as math;
 
-class AnalyticsView extends StatelessWidget {
-  const AnalyticsView({super.key});
+class UserAnalyticsView extends StatelessWidget {
+  const UserAnalyticsView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -43,8 +40,6 @@ class AnalyticsView extends StatelessWidget {
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
             return const Center(child: Text('No data available'));
           } else {
-            final rsvpData = (snapshot.data![0] as List<dynamic>).cast<Map<String, dynamic>>();
-            final categoryData = (snapshot.data![1] as List<dynamic>).cast<Map<String, dynamic>>();
             final genderData = (snapshot.data![2] as List<dynamic>).cast<Map<String, dynamic>>();
             return SingleChildScrollView(
               child: Padding(
@@ -52,24 +47,6 @@ class AnalyticsView extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    /// Counter Cards
-                    Row(
-                      children: [
-                        CounterCard(
-                          title: 'Total Events',
-                          fetchCount: analyticsService.getTotalEvents,
-                        ),
-                        CounterCard(
-                          title: 'Total Users',
-                          fetchCount: analyticsService.getTotalUsers,
-                        ),
-                        CounterCard(
-                          title: 'Total RSVP',
-                          fetchCount: analyticsService.getTotalRsvp,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
                     /// Gender Distribution and Age Bar Graph Row
                     SizedBox(
                       height: screenHeight * 0.4,
@@ -89,9 +66,9 @@ class AnalyticsView extends StatelessWidget {
                               future: analyticsService.getAgePerUser(),
                               builder: (context, snapshot) {
                                 if (snapshot.hasData) {
-                                  double maxY = snapshot.data!.fold(0.0, (max, item) => 
-                                    math.max(max, (item['value'] as int).toDouble()));
-                                  
+                                  double maxY = snapshot.data!.fold(0.0, (max, item) =>
+                                      math.max(max, (item['value'] as int).toDouble()));
+
                                   return BarGraphWidget(
                                     data: snapshot.data!,
                                     title: 'Age Distribution',
@@ -107,39 +84,6 @@ class AnalyticsView extends StatelessWidget {
                                   ),
                                 );
                               },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    /// Leaderboard Table
-                    LeaderboardTable(data: rsvpData),
-                    const SizedBox(height: 20),
-                    ///  RSVP & Category Charts Row
-                    SizedBox(
-                      height: screenHeight * 0.6,
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Card(
-                              child: PieChartWidget(
-                                data: rsvpData.isNotEmpty 
-                                    ? rsvpData 
-                                    : [{'label': 'No Data', 'value': 1}],
-                                title: 'RSVP Distribution per Event',
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Card(
-                              child: PieChartWidget(
-                                data: categoryData.isNotEmpty 
-                                    ? categoryData 
-                                    : [{'label': 'No Data', 'value': 1}],
-                                title: 'RSVP Distribution per Category',
-                              ),
                             ),
                           ),
                         ],

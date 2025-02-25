@@ -7,6 +7,9 @@ class UserDashboard extends StatelessWidget with DashboardMixin {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isDesktop = screenWidth > 768;
+
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(50),
@@ -17,12 +20,11 @@ class UserDashboard extends StatelessWidget with DashboardMixin {
         padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 24.0),
         child: Center(
           child: GridView(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              crossAxisSpacing: 24.0,
-              mainAxisSpacing: 24.0,
-              childAspectRatio: 1.5,
-              mainAxisExtent: 300,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: isDesktop ? 3 : 2,
+              crossAxisSpacing: 16.0,
+              mainAxisSpacing: 16.0,
+              childAspectRatio: 1.0, // Make cells square
             ),
             children: [
               buildCard(
@@ -36,12 +38,12 @@ class UserDashboard extends StatelessWidget with DashboardMixin {
                 color: const Color(0xFFAD343E),
               ),
               buildCard(
-                title: 'Edit RSVP',
+                title: 'Edit\nRSVP',
                 onTap: () => showEditRsvpDialog(context),
                 color: const Color(0xFFAD343E),
               ),
               buildCard(
-                title: 'Rate Event',
+                title: 'Rate\nEvent',
                 onTap: () => showRateEventDialog(context),
                 color: const Color(0xFFAD343E),
               ),

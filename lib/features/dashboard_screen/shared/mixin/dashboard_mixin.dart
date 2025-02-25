@@ -12,8 +12,9 @@ import 'package:ct_festival/features/dashboard_screen/user/view/dialogs/rate_eve
 import 'package:ct_festival/features/events_screen/view/events_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:ct_festival/utils/logger.dart';
-
-import '../../../analytics_screen/views/analytics_view.dart';
+import 'dart:math' as math;
+import '../../../analytics_screen/views/analytics_centre.dart';
+import '../../../analytics_screen/views/user_analytics_view.dart';
 
 mixin DashboardMixin {
   final AppLogger logger = AppLogger();
@@ -80,7 +81,6 @@ mixin DashboardMixin {
     }
   }
 
-  /// Function to show the login dialog
 
 
   /// Function to show the create event dialog
@@ -127,13 +127,6 @@ mixin DashboardMixin {
       builder: (BuildContext context) => const EditRsvpDialog(),
     );
   }
-  /// Function to show the analytics view
-  void showAnalyticsView(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) =>  AnalyticsView()),
-    );
-  }
 
   void showRsvpAnalyticsView(BuildContext context) {
     Navigator.push(
@@ -142,6 +135,13 @@ mixin DashboardMixin {
     );
   }
 
+  /// Function to go to Analytics Centre
+  void showAnalyticsCentre(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => AnalyticsCentre()),
+    );
+  }
 
   /// Function to show events view
 void showEventsScreen(BuildContext context) {
@@ -156,6 +156,14 @@ void showEventsScreen(BuildContext context) {
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) => const RateEventDialog(),
+    );
+  }
+
+  ///Function to show User Analytics Screen
+  void showUserAnalyticsView(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const UserAnalyticsView()),
     );
   }
 
@@ -176,34 +184,58 @@ void showEventsScreen(BuildContext context) {
     required VoidCallback onTap,
     required Color color,
     bool isDisabled = false,
-  })   {
-    return Card(
-      elevation: 4.0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15.0),
-      ),
-      child: InkWell(
-        onTap: isDisabled ? null : onTap,
-        borderRadius: BorderRadius.circular(15.0),
-        child: Container(
-          padding: const EdgeInsets.all(16.0),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15.0),
-            color: color,
-          ),
-          child: Center(
-            child: Text(
-              title,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 36,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+  }) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final screenWidth = MediaQuery.of(context).size.width;
+        final isDesktop = screenWidth > 768;
+
+        // Calculate dynamic sizes
+        final cardSize = isDesktop
+            ? math.min(constraints.maxWidth, constraints.maxHeight)
+            : math.min(screenWidth / 2, constraints.maxHeight);
+
+        // Fixed font size ratios for consistency
+        final fontSize = isDesktop ? 32.0 : 24.0;
+        final padding = cardSize * 0.03;
+
+        return SizedBox(
+          width: cardSize,
+          height: cardSize,
+          child: Card(
+            elevation: 4.0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15.0),
+            ),
+            child: InkWell(
+              onTap: isDisabled ? null : onTap,
+              borderRadius: BorderRadius.circular(15.0),
+              child: Container(
+                padding: EdgeInsets.all(padding),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15.0),
+                  color: color,
+                ),
+                child: Center(
+                  child: FittedBox(
+                    fit: BoxFit.contain,
+                    child: Text(
+                      title,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: fontSize,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        height: 1.2,
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

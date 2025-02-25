@@ -1,10 +1,8 @@
-// lib/screens/home_screen.dart
-
-import 'package:ct_festival/utils/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:ct_festival/features/events_screen/controller/event_service.dart';
 import 'package:ct_festival/features/events_screen/model/event_model.dart';
 import 'package:ct_festival/features/home_screen/view/home_event_preview.dart';
+import 'package:intl/intl.dart';
 
 
 class HomeView extends StatefulWidget {
@@ -17,17 +15,17 @@ class HomeView extends StatefulWidget {
 /// This class is the state for the HomeScreen shared_widget
 class _HomeViewState extends State<HomeView> {
   final EventService _eventService = EventService();
-  final AppLogger _logger = AppLogger();
 
   int _getCrossAxisCount(double width) {
     if (width > 1200) {
-      return 4;  // Show 3 cards per row on large screens
+      return 3;  // Show 3 cards per row on large screens
     } else if (width > 800) {
       return 2;  // Show 2 cards per row on medium screens
     } else {
       return 1;  // Show 1 card per row on small screens
     }
   }
+
 
   /// This method builds the header section
   @override
@@ -144,8 +142,7 @@ class _HomeViewState extends State<HomeView> {
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(
-            // ignore: deprecated_member_use
-            color: Colors.grey.withOpacity(0.5),
+            color: Colors.grey.withValues(),
             spreadRadius: 5,
             blurRadius: 7,
             offset: const Offset(0, 3),
@@ -157,8 +154,8 @@ class _HomeViewState extends State<HomeView> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            width: isMobile ? 200 : 250,
-            height: isMobile ? 200 : 250,
+            width: isMobile ? 250 : 300,
+            height: isMobile ? 250 : 300,
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(10),
@@ -177,7 +174,7 @@ class _HomeViewState extends State<HomeView> {
               event.title,
               style: TextStyle(
                 color: Colors.white,
-                fontSize: isMobile ? 14 : 16,
+                fontSize: isMobile ? 16 : 18,
                 fontWeight: FontWeight.bold,
               ),
               textAlign: TextAlign.center,
@@ -189,10 +186,10 @@ class _HomeViewState extends State<HomeView> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Text(
-             'Max Participants: ${event.maxParticipants}',
+             'Date: ${DateFormat("dd MMMM yyyy - HH:mm a").format(event.startDate)} ',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: isMobile ? 16 : 18,
+                fontSize: isMobile ? 12 : 14,
               ),
               textAlign: TextAlign.center,
               maxLines: 2,
@@ -230,7 +227,6 @@ class _HomeViewState extends State<HomeView> {
 
   /// This method shows the event preview dialog
   void _homeEventPreview(BuildContext context, BoxConstraints constraints, Event event) {
-    _logger.logInfo('Opening dialog for event: ${event.title}');
     showDialog(
       context: context,
       builder: (BuildContext context) {

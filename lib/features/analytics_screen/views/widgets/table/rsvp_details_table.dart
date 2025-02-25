@@ -143,43 +143,33 @@ class _RsvpDetailsTableState extends State<RsvpDetailsTable> {
           dataRowMaxHeight: 80,
           columns: const [
             DataColumn(
-              label: Expanded(
-                child: Text(
-                  'Name',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
+              label: Text(
+                'Name',
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
             DataColumn(
-              label: Expanded(
-                child: Text(
-                  'Age',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
+              label: Text(
+                'Age',
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
             DataColumn(
-              label: Expanded(
-                child: Text(
-                  'Gender',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
+              label: Text(
+                'Gender',
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
             DataColumn(
-              label: Expanded(
-                child: Text(
-                  'RSVP Status',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
+              label: Text(
+                'RSVP Status',
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
             DataColumn(
-              label: Expanded(
-                child: Text(
-                  'Comment',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
+              label: Text(
+                'Comment',
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
           ],
@@ -216,9 +206,10 @@ class _RsvpDetailsTableState extends State<RsvpDetailsTable> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final isDesktop = screenWidth > 768;
+    final isDesktop = screenWidth > 756;
 
     return Material(
+      color: Colors.transparent,
       child: Container(
         padding: EdgeInsets.all(isDesktop ? 24 : 16),
         decoration: BoxDecoration(
@@ -244,33 +235,37 @@ class _RsvpDetailsTableState extends State<RsvpDetailsTable> {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<String>(
-                  isExpanded: true,
-                  value: selectedEventId,
-                  hint: const Text('Select an event'),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      selectedEventId = newValue;
-                    });
-                    if (newValue != null) {
-                      _loadRsvpDetails(newValue);
-                    }
-                  },
-                  items: eventOptions.map<DropdownMenuItem<String>>((Map<String, dynamic> event) {
-                    return DropdownMenuItem<String>(
-                      value: event['id']?.toString(),
-                      child: Text(event['title']?.toString() ?? 'Untitled Event'),
-                    );
-                  }).toList(),
+              child: SizedBox(
+                width: double.infinity, // Ensure the dropdown stretches properly
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    isExpanded: true,
+                    value: selectedEventId,
+                    hint: const Text('Select an event'),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedEventId = newValue;
+                      });
+                      if (newValue != null) {
+                        _loadRsvpDetails(newValue);
+                      }
+                    },
+                    items: eventOptions.map<DropdownMenuItem<String>>((Map<String, dynamic> event) {
+                      return DropdownMenuItem<String>(
+                        value: event['id']?.toString(),
+                        child: Text(event['title']?.toString() ?? 'Untitled Event'),
+                      );
+                    }).toList(),
+                  ),
                 ),
               ),
             ),
             SizedBox(height: isDesktop ? 24 : 16),
 
-            Expanded(
+            Flexible(
               child: Container(
                 width: double.infinity,
+                constraints: const BoxConstraints(minHeight: 200), // Add minimum height
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(8),
@@ -278,8 +273,8 @@ class _RsvpDetailsTableState extends State<RsvpDetailsTable> {
                 child: isLoading
                     ? const Center(child: CircularProgressIndicator(color: Color(0xFFAD343E)))
                     : isDesktop
-                        ? _buildDesktopView()
-                        : _buildMobileView(),
+                    ? _buildDesktopView()
+                    : _buildMobileView(),
               ),
             ),
           ],

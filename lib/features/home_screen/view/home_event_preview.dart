@@ -6,6 +6,7 @@ import 'package:web/web.dart' as web;
 import 'dart:ui_web' as ui_web;
 import 'package:ct_festival/config/api_keys.dart';
 
+
 class HomeEventPreview extends StatefulWidget {
   final Event event;
   final bool showMap;
@@ -24,34 +25,92 @@ class _HomeEventPreviewState extends State<HomeEventPreview> {
   bool isMapLoaded = false;
   final AppLogger logger = AppLogger();
 
+  // Constants
+  final double _mapHeight = 300.0;
+  final double _padding = 20.0;
+
   @override
   void initState() {
     super.initState();
-    // Register the view factory for this specific event
     final String viewId = 'google-map-${widget.event.title}';
     ui_web.platformViewRegistry.registerViewFactory(
       viewId,
-      (int viewId) {
+          (int viewId) {
         final iframe = web.HTMLIFrameElement()
           ..style.border = 'none'
           ..style.height = '100%'
           ..style.width = '100%'
+          ..style.position = 'absolute'
+          ..style.top = '0'
+          ..style.left = '0'
+          ..style.pointerEvents = 'none'
+          ..style.overflow = 'hidden'
+          ..style.userSelect = 'none'
           ..src = 'https://www.google.com/maps/embed/v1/place'
               '?key=${ApiKeys.googleMapsKey}'
               '&q=${Uri.encodeComponent(widget.event.location)}'
-              '&zoom=15';
-        
-        // Add load event listener
+              '&zoom=15'
+              '&language=en';
+
         iframe.onLoad.listen((_) {
           if (mounted) {
-            setState(() {
-              isMapLoaded = true;
-            });
+            setState(() => isMapLoaded = true);
           }
         });
-        
+
         return iframe;
       },
+    );
+  }
+
+  Widget _buildMap() {
+    return Container(
+      height: _mapHeight,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: const Color(0xFFF2AF29),
+          width: 2,
+        ),
+      ),
+      clipBehavior: Clip.hardEdge,
+      child: Stack(
+        children: [
+          AbsorbPointer(
+            absorbing: true,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: HtmlElementView(
+                viewType: 'google-map-${widget.event.title}',
+              ),
+            ),
+          ),
+          if (!isMapLoaded)
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(color: Color(0xFFAD343E)),
+                    SizedBox(height: 16),
+                    Text(
+                      'Loading Map...',
+                      style: TextStyle(
+                        color: Color(0xFFAD343E),
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 
@@ -63,80 +122,24 @@ class _HomeEventPreviewState extends State<HomeEventPreview> {
   /// Build the event preview dialog
   @override
   Widget build(BuildContext context) {
-    // Get the screen width
     final screenWidth = MediaQuery.of(context).size.width;
-
-    // Define padding based on screen size
-    final horizontalPadding = screenWidth > 1200 ? 100.0 : // desktop
-                            screenWidth > 600 ? 50.0 : // tablet
-                            20.0; // mobile
 
     return Scaffold(
       backgroundColor: const Color(0xFFAD343E),
       body: SingleChildScrollView(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            minHeight: MediaQuery.of(context).size.height,
-          ),
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
-            child: Column(
-              children: [
-                _buildHeader(context),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: _padding),
+          child: Column(
+            children: [
+              _buildHeader(context),
+              const SizedBox(height: 20),
+              _buildEventDetails(screenWidth),
+              if (widget.showMap) ...[
+                const SizedBox(height: 16),
+                _buildMap(),
                 const SizedBox(height: 20),
-                _buildEventDetails(screenWidth),
-                if (widget.showMap) ...[
-                  const SizedBox(height: 16),
-                  Container(
-                    height: screenWidth > 600 ? 300 : 200, // Adjust map height for mobile
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: const Color(0xFFF2AF29),
-                        width: 2,
-                      ),
-                    ),
-                    child: Stack(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: HtmlElementView(
-                            viewType: 'google-map-${widget.event.title}',
-                          ),
-                        ),
-                        if (!isMapLoaded)
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: const Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  CircularProgressIndicator(
-                                    color: Color(0xFFAD343E),
-                                  ),
-                                  SizedBox(height: 16),
-                                  Text(
-                                    'Loading Map...',
-                                    style: TextStyle(
-                                      color: Color(0xFFAD343E),
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                ],
               ],
-            ),
+            ],
           ),
         ),
       ),
@@ -145,14 +148,15 @@ class _HomeEventPreviewState extends State<HomeEventPreview> {
 
   /// Build the header section
   Widget _buildHeader(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final titleFontSize = screenWidth > 600 ? 24.0 : 20.0;
+    //final screenWidth = MediaQuery.of(context).size.width;
+    final titleFontSize = 24.0; // Consistent title font size
+    final textFontSize = 16.0; // Consistent text font size
 
     return Stack(
       children: [
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.only(top: 36, bottom: 16),
+          padding: const EdgeInsets.only(top: 75, bottom: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -165,12 +169,12 @@ class _HomeEventPreviewState extends State<HomeEventPreview> {
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 5),
               Text(
                 'Max Capacity: ${widget.event.maxParticipants}',
-                style: const TextStyle(
-                  color: Color(0xFFFFFFFF),
-                  fontSize: 16,
+                style: TextStyle(
+                  color: const Color(0xFFFFFFFF),
+                  fontSize: textFontSize,
                 ),
                 textAlign: TextAlign.center,
               )
@@ -187,7 +191,6 @@ class _HomeEventPreviewState extends State<HomeEventPreview> {
               size: 30,
             ),
             onPressed: () {
-              //logger.logDebug('Closing event dialog for ${widget.event.title}');
               Navigator.of(context).pop();
             },
           ),
@@ -198,13 +201,13 @@ class _HomeEventPreviewState extends State<HomeEventPreview> {
 
   /// Build the event details
   Widget _buildEventDetails(double screenWidth) {
-    final textFontSize = screenWidth > 600 ? 16.0 : 14.0;
-    final verticalSpacing = screenWidth > 600 ? 15.0 : 10.0; // Reduced spacing
+    final textFontSize = 16.0; // Consistent text font size
+    final verticalSpacing = 15.0; // Consistent vertical spacing
 
     return Center(
       child: Container(
         padding: EdgeInsets.symmetric(
-          horizontal: screenWidth > 600 ? 50.0 : 20.0,
+          horizontal: 5.0, // Consistent horizontal padding
           vertical: verticalSpacing,
         ),
         child: Column(
@@ -215,9 +218,8 @@ class _HomeEventPreviewState extends State<HomeEventPreview> {
               color: Color(0xFFF2AF29),
               thickness: 2,
             ),
-            SizedBox(height: verticalSpacing),
             Text(
-              'Category: ${widget.event.category}',
+              'Category:\n${widget.event.category}',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: textFontSize,
@@ -225,7 +227,11 @@ class _HomeEventPreviewState extends State<HomeEventPreview> {
             ),
             SizedBox(height: verticalSpacing),
             Text(
-              widget.event.description,
+              'Description:\n${
+                  widget.event.description.isEmpty
+                      ? 'No description available'
+                      : widget.event.description
+              }',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: textFontSize,
@@ -234,14 +240,14 @@ class _HomeEventPreviewState extends State<HomeEventPreview> {
             ),
             SizedBox(height: verticalSpacing * 2),
             Text(
-              'Location: ${widget.event.location}',
+              'Location:\n${widget.event.location}',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: textFontSize,
               ),
               textAlign: TextAlign.left,
             ),
-            SizedBox(height: verticalSpacing / 2),
+            SizedBox(height: verticalSpacing),
             Text(
               'Start Date: ${_formatDateTime(widget.event.startDate)}',
               style: TextStyle(

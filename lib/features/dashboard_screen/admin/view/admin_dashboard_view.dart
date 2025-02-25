@@ -1,73 +1,61 @@
-// view total registered users
-// view registered events
-// create event
-// edit event
-// show event history (all events)
-// view stats of events and users
-
-
-
 import 'package:ct_festival/features/dashboard_screen/shared/mixin/dashboard_mixin.dart';
 import 'package:ct_festival/features/dashboard_screen/shared/widgets/logout_nav.dart';
 import 'package:flutter/material.dart';
 import 'package:ct_festival/features/events_screen/controller/event_service.dart';
 
 class AdminDashboardView extends StatelessWidget with DashboardMixin {
-   AdminDashboardView({super.key});
+  AdminDashboardView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isDesktop = screenWidth > 768;
+
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(50),
         child: LogoutNavBar(),
       ),
-      backgroundColor: Color(0xFF474747),
+      backgroundColor: const Color(0xFF474747),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 24.0),
         child: Center(
           child: GridView(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              crossAxisSpacing: 24.0,
-              mainAxisSpacing: 24.0,
-              childAspectRatio: 1.5,
-              mainAxisExtent: 300,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: isDesktop ? 3 : 2,
+              crossAxisSpacing: 16.0,
+              mainAxisSpacing: 16.0,
+              childAspectRatio: 1.0,
             ),
             children: [
               buildCard(
-                title: 'View Current Events',
+                title: 'View\nCurrent\nEvents',
                 onTap: () => showEventsScreen(context),
-                color: Color(0xFFF2AF29),
+                color: const Color(0xFFF2AF29),
               ),
               buildCard(
-                title: 'Create Event',
+                title: 'Create\nEvent',
                 onTap: () => showCreateEventDialog(context),
-                color: Color(0xFFF2AF29),
+                color: const Color(0xFFF2AF29),
               ),
               buildCard(
-                title: 'Edit Event',
+                title: 'Edit\nEvent',
                 onTap: () => showEditEventDialog(context),
-                color: Color(0xFFF2AF29),
+                color: const Color(0xFFF2AF29),
               ),
               buildCard(
-                title: 'Analytics',
-                onTap: () => showAnalyticsView(context),
-                color: Color(0xFFF2AF29),
+                title: 'Analytics\nCentre',
+                onTap: () => showAnalyticsCentre(context),
+                color: const Color(0xFFF2AF29),
               ),
               buildCard(
-                title: 'RSVPs Analytics',
-                onTap: () => showRsvpAnalyticsView(context),
-                color: Color(0xFFF2AF29),
-              ),
-              buildCard(
-                title: 'Archive Event',
+                title: 'Archive\nEvent',
                 onTap: () async {
                   final eventService = EventService();
                   final events = await eventService.getAllEvents();
-                  
+
                   if (!context.mounted) return;
-                  
+
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
@@ -83,7 +71,7 @@ class AdminDashboardView extends StatelessWidget with DashboardMixin {
                               return ListTile(
                                 title: Text(event.title),
                                 onTap: () {
-                                  Navigator.pop(context); // Close the selection dialog
+                                  Navigator.pop(context);
                                   showArchiveEventDialog(
                                     context,
                                     event.id,

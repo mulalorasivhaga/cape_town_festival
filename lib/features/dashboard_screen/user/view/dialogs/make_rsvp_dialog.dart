@@ -83,7 +83,6 @@ class RsvpDialogState extends State<RsvpDialog> {
       actions: [
         TextButton(
           onPressed: () {
-            logger.logInfo('User cancelled RSVP');
             Navigator.of(context).pop();
           },
           child: const Text('Cancel', style: TextStyle(color: Colors.red, fontSize: 16)),
@@ -102,7 +101,6 @@ class RsvpDialogState extends State<RsvpDialog> {
                       TextButton(
                         onPressed: () {
                           Navigator.of(context).pop(false);
-                          logger.logWarning('User cancelled RSVP confirmation');
                         },
                         child: const Text('Cancel', style: TextStyle(color: Colors.red, fontSize: 16)),
                       ),
@@ -122,7 +120,7 @@ class RsvpDialogState extends State<RsvpDialog> {
                 final user = FirebaseAuth.instance.currentUser;
                 if (user != null) {
                   try {
-                    await rsvpService.createRsvp(user.uid, selectedEvent!.id, 'attending');
+                    await rsvpService.createRsvp(user.uid, selectedEvent!.id, 'CONFIRMED');
                     if (!localContext.mounted) return;
                     ScaffoldMessenger.of(localContext).showSnackBar(
                       const SnackBar(content: Text('RSVP confirmed')),
