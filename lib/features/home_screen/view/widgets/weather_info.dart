@@ -1,22 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
 
 class WeatherInfoWidget extends StatelessWidget {
   final String weatherInfo;
-  final String weatherCondition; // New parameter for weather condition
+  final String weatherCondition;
+  final String location;
+  final int humidity;
+  final double windSpeed;
+  final DateTime lastUpdated;
 
   const WeatherInfoWidget({
     super.key,
     required this.weatherInfo,
-    required this.weatherCondition, // Accept weather condition
+    required this.weatherCondition,
+    required this.location,
+    required this.humidity,
+    required this.windSpeed,
+    required this.lastUpdated,
   });
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
+    final formattedTime = DateFormat('HH:mm').format(lastUpdated);
 
-    // Determine the icon based on the weather condition
-    IconData weatherIcon = FontAwesomeIcons.cloud; // Default icon
+    IconData weatherIcon = FontAwesomeIcons.cloud;
     switch (weatherCondition.toLowerCase()) {
       case 'clear':
         weatherIcon = FontAwesomeIcons.sun;
@@ -34,14 +42,15 @@ class WeatherInfoWidget extends StatelessWidget {
         weatherIcon = FontAwesomeIcons.bolt;
         break;
       default:
-        weatherIcon = FontAwesomeIcons.cloudSun; // Fallback icon
+        weatherIcon = FontAwesomeIcons.cloudSun;
     }
 
     return Container(
-      padding: EdgeInsets.all(screenWidth * 0.03), // Responsive padding
-      margin: const EdgeInsets.symmetric(vertical: 20.0),
+      height: 300, // Match map height
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Color(0xFF474747),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: const Color(0xFFF2AF29), width: 2),
         boxShadow: [
@@ -53,20 +62,71 @@ class WeatherInfoWidget extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          FaIcon(weatherIcon, color: Colors.orange, size: 24), // Use the determined icon
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              weatherInfo,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: screenWidth * 0.02, // Responsive font size
-                fontWeight: FontWeight.bold,
+          Text(
+            location,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              FaIcon(weatherIcon, color: const Color(0xFFF2AF29), size: 32),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  weatherInfo,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
               ),
-              textAlign: TextAlign.center,
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const FaIcon(FontAwesomeIcons.droplet, size: 16, color: Color(0xFFF2AF29)),
+              const SizedBox(width: 8),
+              Text(
+                'Humidity: $humidity%',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const FaIcon(FontAwesomeIcons.wind, size: 16, color: Color(0xFFF2AF29)),
+              const SizedBox(width: 8),
+              Text(
+                'Wind: ${windSpeed.toStringAsFixed(1)} m/s',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Last Updated: $formattedTime',
+            style: TextStyle(
+              color: Colors.grey[400],
+              fontSize: 14,
             ),
           ),
         ],
