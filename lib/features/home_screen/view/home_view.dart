@@ -16,6 +16,7 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   final EventService _eventService = EventService();
 
+  /// This method calculates the number of columns based on the screen width
   int _getCrossAxisCount(double width) {
     if (width > 1200) {
       return 3;  // Show 3 cards per row on large screens

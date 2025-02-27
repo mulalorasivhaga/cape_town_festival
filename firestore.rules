@@ -25,5 +25,11 @@ service cloud.firestore {
     match /{document=**} {
       allow read, write: if request.auth != null;
     }
+
+    //allow all users to read comments from the ratings collection
+        match /ratings/{ratingId} {
+          allow read: if true; // Allow all users to read ratings
+          allow write: if request.auth != null; // Allow only authenticated users to write ratings
+        }
   }
 }

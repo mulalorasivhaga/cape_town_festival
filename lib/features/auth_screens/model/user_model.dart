@@ -1,3 +1,4 @@
+// lib/features/auth_screens/model/user_model.dart
 class User {
   final String firstName;
   final String lastName;
@@ -33,7 +34,7 @@ class User {
       age: map['age'] ?? '',
       email: map['email'] ?? '',
       gender: map['gender'] ?? '',
-      createdAt: map['createdAt'] != null ? DateTime.parse(map['createdAt']) : null,
+      createdAt: map['createdAt'] != null ? DateTime.parse(map['createdAt']) : DateTime.now(),
     );
   }
 
@@ -43,7 +44,6 @@ class User {
     String? age,
     String? email,
     String? gender,
-    String? role,
     DateTime? createdAt,
   }) {
     return User(
@@ -58,10 +58,6 @@ class User {
 
   @override
   String toString() {
-    return 'User(firstName: $firstName,'
-        'lastName: $lastName,'
-        'age: $age,'
-        'email: $email,'
-        'gender: $gender';
+    return 'User(firstName: $firstName, lastName: $lastName, age: $age, email: $email, gender: $gender)';
   }
 }
