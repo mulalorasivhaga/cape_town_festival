@@ -56,7 +56,7 @@ class _HomeViewState extends State<HomeView> {
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text('Please log in to view event details'),
+                              content: Text('Please Register/Login for more access to events'),
                               backgroundColor: Color(0xFFAD343E),
                               behavior: SnackBarBehavior.floating,
                               duration: Duration(seconds: 3),

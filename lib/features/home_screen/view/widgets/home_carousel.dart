@@ -14,20 +14,17 @@ class HomeCarousel extends StatelessWidget {
   });
 
   @override
-  @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-
-        double carouselHeight = constraints.maxWidth > 800 ? 600 : 400;
-
+        double carouselHeight = constraints.maxWidth > 700 ? 500 : 300;
         return Container(
           width: double.infinity,
           constraints: BoxConstraints(
             maxWidth: constraints.maxWidth > 1400 ? 1400 : constraints.maxWidth,
           ),
           color: Colors.transparent.withValues(),
-          padding: const EdgeInsets.symmetric(vertical: 32),
+          padding: const EdgeInsets.symmetric(vertical: 16),
           child: FutureBuilder<List<Event>>(
             future: _eventService.getAllEvents(),
             builder: (context, snapshot) {
@@ -56,7 +53,7 @@ class HomeCarousel extends StatelessWidget {
                 },
                 options: carousel.CarouselOptions(
                   height: carouselHeight,
-                  viewportFraction: constraints.maxWidth > 800 ? 0.8 : 0.9,
+                  viewportFraction: constraints.maxWidth > 1200 ? 0.8 : 0.9,
                   enlargeCenterPage: true,
                   enlargeFactor: 0.3,
                   enableInfiniteScroll: true,
@@ -101,7 +98,7 @@ class HomeCarousel extends StatelessWidget {
             child: InkWell(
               onTap: () => onEventTap(event.id),
               child: Padding(
-                padding: const EdgeInsets.all(32.0),
+                padding: const EdgeInsets.all(8.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.start,
