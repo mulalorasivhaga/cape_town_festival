@@ -38,7 +38,11 @@ class ViewRsvpDialogState extends ConsumerState<ViewRsvpDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('RSVP\'d Events'),
+      backgroundColor: const Color(0xFF474747),
+      title: const Text(
+        'RSVP\'d Events',
+        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white,),
+      ),
       content: FutureBuilder<List<Rsvp>>(
         future: _rsvpEventsFuture,
         builder: (context, rsvpSnapshot) {
@@ -76,12 +80,17 @@ class ViewRsvpDialogState extends ConsumerState<ViewRsvpDialog> {
                         return Card(
                           margin: const EdgeInsets.all(8.0),
                           child: ListTile(
-                            title: Text('Event: $title'),
+                            title: Text('Event: $title', style: const TextStyle(fontSize: 16, color: Colors.black)),
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Status: ${event.status}'),
-                                Text('Created At: ${DateFormat('dd/MM/yy (HH:mm a)').format(event.createdAt)}'),
+                                Text('Status: ${event.status}',
+                                    style: const TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.black)),
+                                Text('Created At: ${DateFormat('dd/MM/yy (HH:mm a)').format(event.createdAt)}', style: const TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.black)),
                               ],
                             ),
                           ),
@@ -101,7 +110,10 @@ class ViewRsvpDialogState extends ConsumerState<ViewRsvpDialog> {
             logger.logInfo('Closing ViewRsvpDialog');
             Navigator.of(context).pop();
           },
-          child: const Text('Close'),
+          child: const Text(
+            'Close',
+            style: TextStyle(color: Colors.red, fontSize: 16),
+          ),
         ),
       ],
     );

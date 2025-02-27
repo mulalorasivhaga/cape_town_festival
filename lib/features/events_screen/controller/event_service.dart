@@ -16,7 +16,8 @@ class EventService {
 
   /// get all events
   Future<List<Event>> getAllEvents() async {
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('events').get();
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection(
+        'events').get();
 
     return querySnapshot.docs.map((doc) {
       return Event.fromFirestore(doc.data() as Map<String, dynamic>, doc.id);
@@ -47,7 +48,9 @@ class EventService {
   Future<String> editEvent(Event event) async {
     try {
       // Assume Firestore or any async update logic here
-      await FirebaseFirestore.instance.collection('events').doc(event.id).update(event.toMap());
+      await FirebaseFirestore.instance.collection('events')
+          .doc(event.id)
+          .update(event.toMap());
       return 'Event updated successfully';
     } catch (e) {
       return 'Failed to update event: $e';
@@ -56,7 +59,9 @@ class EventService {
 
   /// Get Event by ID
   Future<Event> getEventById(String eventId) async {
-    final docSnapshot = await FirebaseFirestore.instance.collection('events').doc(eventId).get();
+    final docSnapshot = await FirebaseFirestore.instance.collection('events')
+        .doc(eventId)
+        .get();
     if (docSnapshot.exists) {
       return Event.fromMap(docSnapshot.data()!);
     } else {
@@ -68,7 +73,7 @@ class EventService {
   Future<String> archiveEvent(String eventId) async {
     try {
       //_logger.logInfo('📦 Starting archive process for event: $eventId');
-      
+
       final admin = _auth.currentUser;
       if (admin == null) {
         _logger.logWarning('⚠️ Archive attempt without admin authentication');
@@ -77,16 +82,18 @@ class EventService {
 
       final authAdmin = await _authService.getCurrentUser();
       if (authAdmin is! admin_auth.Admin) {
-        _logger.logWarning('⚠️ Non-admin user attempted to archive event: ${admin.email}');
+        _logger.logWarning(
+            '⚠️ Non-admin user attempted to archive event: ${admin.email}');
         return 'Only admins can archive events';
       }
 
       // Get the event document
       _logger.logInfo('🔍 Fetching event document: $eventId');
       final eventDoc = await _firestore.collection('events').doc(eventId).get();
-      
+
       if (!eventDoc.exists) {
-        _logger.logWarning('⚠️ Attempted to archive non-existent event: $eventId');
+        _logger.logWarning(
+            '⚠️ Attempted to archive non-existent event: $eventId');
         return 'Event not found';
       }
 
@@ -110,7 +117,7 @@ class EventService {
 
       // Commit the batch
       await batch.commit();
-      
+
       _logger.logInfo('✅ Successfully archived event: $eventId');
       return 'Event archived successfully';
     } catch (e) {
@@ -118,6 +125,4 @@ class EventService {
       return 'Failed to archive event: ${e.toString()}';
     }
   }
-
-
 }

@@ -45,7 +45,7 @@ class RateEventDialogState extends ConsumerState<RateEventDialog> {
   Widget build(BuildContext context) {
     if (isLoading) {
       return const Dialog(
-        backgroundColor: Colors.white,
+        backgroundColor: Color (0xFF474747),
         child: Padding(
           padding: EdgeInsets.all(20.0),
           child: Column(
@@ -53,7 +53,10 @@ class RateEventDialogState extends ConsumerState<RateEventDialog> {
             children: [
               CircularProgressIndicator(),
               SizedBox(height: 16),
-              Text('Loading your events...'),
+              Text('Loading your events...',
+              style: TextStyle(
+                color: Colors.white
+              ),),
             ],
           ),
         ),

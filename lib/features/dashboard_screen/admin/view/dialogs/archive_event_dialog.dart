@@ -32,19 +32,19 @@ class ArchiveEventDialog extends StatelessWidget {
       backgroundColor: Colors.transparent,
       insetPadding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
-        width: MediaQuery.of(context).size.width * 0.8,
-        height: MediaQuery.of(context).size.height * 0.4,
+        width: MediaQuery.of(context).size.width * 0.35,
+        height: MediaQuery.of(context).size.height * 0.45,
         decoration: BoxDecoration(
-          color: const Color(0xFFAD343E),
-          borderRadius: BorderRadius.circular(15),
+          color: const Color(0xFF474747),
+          borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
           children: [
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(24),
               decoration: const BoxDecoration(
                 border: Border(
-                  bottom: BorderSide(color: Color(0xFFF2AF29), width: 1),
+                  bottom: BorderSide(color: Color(0xFFAD343E), width: 2),
                 ),
               ),
               child: Row(
@@ -54,7 +54,7 @@ class ArchiveEventDialog extends StatelessWidget {
                     'Archive Event',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 36,
+                      fontSize: 32,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -67,7 +67,7 @@ class ArchiveEventDialog extends StatelessWidget {
             ),
             Expanded(
               child: Container(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(24),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -76,14 +76,14 @@ class ArchiveEventDialog extends StatelessWidget {
                       'Are you sure you want to archive "$eventTitle"?',
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 18,
+                        fontSize: 20,
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 20),
                     const Text(
                       'Warning: This action cannot be undone. The event will be moved to the archived events collection.',
                       style: TextStyle(
-                        color: Color(0xFFF2AF29),
+                        color: Colors.red,
                         fontSize: 16,
                       ),
                     ),
@@ -92,7 +92,7 @@ class ArchiveEventDialog extends StatelessWidget {
               ),
             ),
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(24),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -103,14 +103,14 @@ class ArchiveEventDialog extends StatelessWidget {
                     ),
                     child: const Text('Cancel'),
                   ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: 20),
                   ElevatedButton(
                     onPressed: () => _handleArchive(context),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFF2AF29),
+                      backgroundColor: Color(0xFFF2AF29),
                       foregroundColor: Colors.white,
                     ),
-                    child: const Text('Archive Event'),
+                    child: const Text('Archive'),
                   ),
                 ],
               ),

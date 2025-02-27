@@ -44,13 +44,17 @@ class RsvpDialogState extends State<RsvpDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('RSVP for Event', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+      backgroundColor: const Color(0xFF474747),
+      title: const Text(
+        'RSVP for Event',
+        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+      ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           DropdownButton<Event>(
             value: selectedEvent,
-            hint: const Text('Select Event', style: TextStyle(fontSize: 16)),
+            hint: const Text('Select Event', style: TextStyle(fontSize: 16, color: Colors.white)),
             items: events.map((event) {
               return DropdownMenuItem<Event>(
                 value: event,
@@ -68,6 +72,9 @@ class RsvpDialogState extends State<RsvpDialog> {
             children: [
               Checkbox(
                 value: isAttending,
+                checkColor: Colors.black,
+                fillColor: WidgetStateProperty.all<Color>(Colors.white),
+                activeColor: const Color(0xFFAD343E),
                 onChanged: (value) {
                   setState(() {
                     isAttending = value!;
@@ -75,7 +82,10 @@ class RsvpDialogState extends State<RsvpDialog> {
                   logger.logInfo('Is attending: $isAttending');
                 },
               ),
-              const Text('I am attending', style: TextStyle(fontSize: 16)),
+              const Text(
+                'I am attending',
+                style: TextStyle(fontSize: 16, color: Colors.red,),
+              ),
             ],
           ),
         ],
@@ -85,10 +95,21 @@ class RsvpDialogState extends State<RsvpDialog> {
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: const Text('Cancel', style: TextStyle(color: Colors.red, fontSize: 16)),
+          child: const Text(
+            'Cancel',
+            style: TextStyle(color: Colors.red, fontSize: 16),
+          ),
         ),
         ElevatedButton(
+          style: ButtonStyle(
+            backgroundColor: WidgetStateProperty.all<Color>(const Color(0xFFF2AF29)),
+          ),
           onPressed: () async {
+            ElevatedButtonThemeData(
+              style: ButtonStyle(
+                backgroundColor: WidgetStateProperty.all<Color>(const Color(0xFFF2AF29)),
+              ),
+            );
             final localContext = context;
             if (selectedEvent != null && isAttending) {
               final confirm = await showDialog<bool>(
@@ -123,7 +144,10 @@ class RsvpDialogState extends State<RsvpDialog> {
                     await rsvpService.createRsvp(user.uid, selectedEvent!.id, 'CONFIRMED');
                     if (!localContext.mounted) return;
                     ScaffoldMessenger.of(localContext).showSnackBar(
-                      const SnackBar(content: Text('RSVP confirmed')),
+                      const SnackBar(
+                        content: Text('RSVP confirmed', style: TextStyle(color: Colors.white)),
+                        backgroundColor: Color(0xFF474747),
+                      ),
                     );
                     logger.logInfo('RSVP confirmed for event: ${selectedEvent!.title}');
                     Navigator.of(localContext).pop();
@@ -134,12 +158,19 @@ class RsvpDialogState extends State<RsvpDialog> {
               }
             } else {
               ScaffoldMessenger.of(localContext).showSnackBar(
-                const SnackBar(content: Text('Please select an event and confirm attendance')),
+                const SnackBar(
+                  content: Text('Please select an event and confirm attendance', style: TextStyle(color: Colors.white)),
+                  backgroundColor: Color(0xFF474747),
+                ),
               );
               logger.logWarning('User did not select an event or confirm attendance');
             }
           },
-          child: const Text('RSVP', style: TextStyle(fontSize: 16)),
+          child: const Text('RSVP',
+              style: TextStyle(fontSize: 16,
+              color: Colors.white,
+          )
+          ),
         ),
       ],
     );

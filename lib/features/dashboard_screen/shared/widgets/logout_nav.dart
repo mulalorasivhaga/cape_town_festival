@@ -75,14 +75,14 @@ class LogoutNavBarState extends ConsumerState<LogoutNavBar> with DashboardMixin 
             onPressed: () => Navigator.of(context).pop(false),
             child: const Text(
               'Cancel',
-              style: TextStyle(color: Color(0xFFAD343E)),
+              style: TextStyle(color: Colors.red),
             ),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
             child: const Text(
               'Logout',
-              style: TextStyle(color: Color(0xFFAD343E)),
+              style: TextStyle(color: Colors.red),
             ),
           ),
         ],

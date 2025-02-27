@@ -1,9 +1,10 @@
+import 'package:ct_festival/features/home_screen/view/widgets/home_carousel.dart';
 import 'package:flutter/material.dart';
 import 'package:ct_festival/features/events_screen/controller/event_service.dart';
 import 'package:ct_festival/features/events_screen/model/event_model.dart';
 import 'package:ct_festival/features/home_screen/view/home_event_preview.dart';
 import 'package:intl/intl.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -45,8 +46,29 @@ class _HomeViewState extends State<HomeView> {
                 ),
                 child: Column(
                   children: [
+                    /// HomeCarousel widget
+                    HomeCarousel(
+                      onEventTap: (eventId) async {
+                        final user = FirebaseAuth.instance.currentUser;
+
+                        if (user != null) {
+                          Navigator.pushNamed(context, '/dashboard');
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Please log in to view event details'),
+                              backgroundColor: Color(0xFFAD343E),
+                              behavior: SnackBarBehavior.floating,
+                              duration: Duration(seconds: 3),
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                    /// Header section
                     _buildHeader(constraints),
                     const SizedBox(height: 20),
+                    /// Event grid
                     _buildEventGrid(constraints),
                   ],
                 ),
@@ -73,7 +95,6 @@ class _HomeViewState extends State<HomeView> {
           ),
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 16),
         ConstrainedBox(
           constraints: BoxConstraints(
             maxWidth: isMobile ? constraints.maxWidth * 0.9 : 800,

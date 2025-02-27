@@ -218,15 +218,18 @@ class EditRsvpDialogState extends ConsumerState<EditRsvpDialog> {
           const SizedBox(height: 20),
           Center(
             child: ElevatedButton(
+
               onPressed: (selectedRsvp == null || selectedStatus == null)
                   ? null
                   : _showConfirmationDialog,
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFF2AF29),
+                backgroundColor: const Color(0xFFAD343E),
                 padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-              ),
-              child: const Text(
-                'Update RSVP',
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),child: const Text(
+                'Update',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 18,
