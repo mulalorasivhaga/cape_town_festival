@@ -1,4 +1,5 @@
 import 'package:ct_festival/features/home_screen/controller/weather_service.dart';
+import 'package:ct_festival/features/home_screen/view/widgets/comment_table.dart';
 import 'package:ct_festival/features/home_screen/view/widgets/weather_info.dart';
 import 'package:flutter/material.dart';
 import 'package:ct_festival/features/events_screen/model/event_model.dart';
@@ -110,8 +111,10 @@ class _HomeEventPreviewState extends State<HomeEventPreview> {
           padding: EdgeInsets.symmetric(horizontal: _padding),
           child: Column(
             children: [
+              /// EventHeader widget
               EventHeader(event: widget.event), // Use EventHeader
               const SizedBox(height: 20),
+              /// EventDetails widget
               EventDetails(event: widget.event), // Use EventDetails
               if (widget.showMap) ...[
                 const SizedBox(height: 16),
@@ -141,7 +144,11 @@ class _HomeEventPreviewState extends State<HomeEventPreview> {
                 ),
                 const SizedBox(height: 30),
               ],
-              //CommentSection(eventId: widget.event.id), // pass event ID
+              // Add Comments Section
+              SizedBox(
+                height: 400, // Fixed height for comments table
+                child: CommentsTable(eventId: widget.event.id),
+              ),
               const SizedBox(height: 30),
             ],
           ),

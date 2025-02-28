@@ -265,18 +265,16 @@ class AnalyticsService {
   Future<List<Map<String, dynamic>>> getEventRsvpDetails(String eventId) async {
     try {
       logger.logInfo('📊 Fetching RSVP details for event: $eventId');
-      
-      // Get all RSVPs for the specified event
+
       final rsvpQuerySnapshot = await _firestore
           .collection('rsvp')
           .where('eventId', isEqualTo: eventId)
           .get();
 
       logger.logInfo('📝 Found ${rsvpQuerySnapshot.docs.length} RSVPs for event');
-      
+
       List<Map<String, dynamic>> rsvpDetails = [];
 
-      // Process each RSVP
       for (var rsvpDoc in rsvpQuerySnapshot.docs) {
         try {
           final rsvpData = rsvpDoc.data();
@@ -285,7 +283,7 @@ class AnalyticsService {
           // Get user details
           logger.logInfo('👤 Fetching user details for: $userId');
           final userDoc = await _firestore.collection('users').doc(userId).get();
-          
+
           if (!userDoc.exists) {
             logger.logWarning('⚠️ User not found for RSVP: $userId');
             continue;
@@ -301,31 +299,31 @@ class AnalyticsService {
               .get();
 
           String comment = 'N/A';
+          int rating = 0;
           if (ratingDoc.docs.isNotEmpty) {
-            comment = ratingDoc.docs.first.data()['comment'] ?? 'N/A';
+            final ratingData = ratingDoc.docs.first.data();
+            comment = ratingData['comment'] ?? 'N/A';
+            rating = ratingData['rating'] ?? 0;
           }
 
-          // Compile all information
           Map<String, dynamic> detailRow = {
             'userName': '${userData['firstName']} ${userData['lastName']}',
             'age': userData['age'] ?? 'N/A',
             'gender': userData['gender'] ?? 'N/A',
             'rsvpStatus': rsvpData['status'] ?? 'N/A',
             'comment': comment,
+            'rating': rating, // Added rating field
           };
 
           rsvpDetails.add(detailRow);
           logger.logInfo('✅ Added RSVP detail row for user: $userId');
         } catch (userError) {
           logger.logError('❌ Error processing individual RSVP', userError);
-          continue; // Skip this RSVP but continue processing others
+          continue;
         }
       }
 
-      // Sort by name
       rsvpDetails.sort((a, b) => a['userName'].compareTo(b['userName']));
-      
-      logger.logInfo('✅ Successfully compiled RSVP details for event: $eventId');
       return rsvpDetails;
     } catch (e) {
       logger.logError('❌ Failed to fetch RSVP details for event: $eventId', e);
