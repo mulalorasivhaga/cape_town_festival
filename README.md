@@ -122,7 +122,7 @@ lib/
 
 ## Contact
 For support or queries, please contact:
-[mulalorasivhaga@icloud.com]
+[mulalorasivhaga@icloud.com] or alternatively [RSVMUL002@myuct.ac.za]
 
 ---
 

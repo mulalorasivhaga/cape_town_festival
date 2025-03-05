@@ -69,7 +69,11 @@ class RsvpService {
 
       for (final rsvp in rsvps) {
         final event = await eventService.getEventById(rsvp.eventId);
-        eventTitles.add(event.title);
+        if (event != null) {
+          eventTitles.add(event.title);
+        } else {
+          logger.logWarning('Event not found for RSVP: ${rsvp.eventId}');
+        }
       }
       return eventTitles;
     } catch (e) {

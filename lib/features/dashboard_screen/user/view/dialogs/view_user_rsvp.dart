@@ -74,28 +74,30 @@ class ViewRsvpDialogState extends ConsumerState<ViewRsvpDialog> {
                     child: ListView.builder(
                       shrinkWrap: true,
                       itemCount: events.length,
-                      itemBuilder: (context, index) {
-                        final event = events[index];
-                        final title = titles[index];
-                        return Card(
-                          margin: const EdgeInsets.all(8.0),
-                          child: ListTile(
-                            title: Text('Event: $title', style: const TextStyle(fontSize: 16, color: Colors.black)),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Status: ${event.status}',
-                                    style: const TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.black)),
-                                Text('Created At: ${DateFormat('dd/MM/yy (HH:mm a)').format(event.createdAt)}', style: const TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.black)),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
+                        itemBuilder: (context, index) {
+                          // Ensure index is within bounds for both lists
+                          if (index < events.length && index < titles.length) {
+                            final event = events[index];
+                            final title = titles[index];
+
+                            return Card(
+                              margin: const EdgeInsets.all(8.0),
+                              child: ListTile(
+                                title: Text('Event: $title', style: const TextStyle(fontSize: 16, color: Colors.black)),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Status: ${event.status}', style: const TextStyle(fontSize: 16, color: Colors.black)),
+                                    Text('Created At: ${DateFormat('dd/MM/yy (HH:mm a)').format(event.createdAt)}', style: const TextStyle(fontSize: 16, color: Colors.black)),
+                                  ],
+                                ),
+                              ),
+                            );
+                          } else {
+                            // Handle the case where the index is out of range
+                            return const SizedBox.shrink(); // Return an empty widget or handle as needed
+                          }
+                        }
                     ),
                   );
                 }

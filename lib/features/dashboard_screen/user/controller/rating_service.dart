@@ -28,7 +28,7 @@ class RatingService {
       for (var doc in querySnapshot.docs) {
         final eventId = doc.data()['eventId'] as String;
         final event = await _eventService.getEventById(eventId);
-        rsvpToEventTitle[doc.id] = event.title;
+        rsvpToEventTitle[doc.id] = event?.title ?? 'Unknown Event'; // Updated line
       }
 
       return rsvpToEventTitle;

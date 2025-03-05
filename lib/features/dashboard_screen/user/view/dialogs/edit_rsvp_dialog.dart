@@ -33,7 +33,7 @@ class EditRsvpDialogState extends ConsumerState<EditRsvpDialog> {
       
       for (var rsvp in rsvps) {
         final event = await _rsvpService.eventService.getEventById(rsvp.eventId);
-        titles[rsvp.eventId] = event.title;
+        titles[rsvp.eventId] = event?.title ?? 'Unknown Event'; // Updated line
       }
 
       setState(() {
