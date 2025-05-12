@@ -44,14 +44,14 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyD03IR7PdCGc17uTXBDvrrI0XyGsRiF5is',
-    appId: '1:642133996614:web:418240ce607395c8738647',
-    messagingSenderId: '642133996614',
-    projectId: 'ct-festival',
-    authDomain: 'ct-festival.firebaseapp.com',
-    databaseURL: 'https://ct-festival-default-rtdb.europe-west1.firebasedatabase.app',
-    storageBucket: 'ct-festival.firebasestorage.app',
-    measurementId: 'G-8EMCWD1NJY',
+    apiKey: 'API_KEY',
+    appId: 'APP_ID',
+    messagingSenderId: 'MS_ID',
+    projectId: 'PROJECT_ID',
+    authDomain: 'AUTH_DOMAIN',
+    databaseURL: 'DB_URL',
+    storageBucket: 'SB',
+    measurementId: 'MEASUREMENT_ID',
   );
 
 }
